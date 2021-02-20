@@ -1,13 +1,24 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"os"
+
+	"github.com/gofiber/fiber/v2"
+)
+
+func serveStatic(app *fiber.App) {
+	app.Static("/", "./client/build")
+}
 
 func main() {
 	app := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World 👋!")
-	})
+	serveStatic(app)
 
-	app.Listen(":3000")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000"
+	}
+
+	app.Listen(":" + port)
 }
