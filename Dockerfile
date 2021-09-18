@@ -19,9 +19,6 @@ COPY . ./
 RUN go get -d -v
 RUN CGO_ENABLED=0 go build -o go-famtree .
 
-# Create user for the scratch image
-RUN adduser -S -u 10001 scratchuser
-
 
 # The final image
 FROM alpine
@@ -32,9 +29,10 @@ COPY --from=ui-build /app/build ./build
 COPY --from=server-build /app/go-famtree ./
 
 # Run under non-privileged user with minimal write permissions
-USER 10001
+RUN adduser -S -D -H user
+USER user
 
-CMD ["top"]
+CMD ["./go-famtree"]
 
 # Heroku redefines exposed port
 ENV PORT=8080
