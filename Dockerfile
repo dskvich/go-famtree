@@ -2,11 +2,9 @@
 FROM node:13.12.0-alpine as ui-build
 WORKDIR /app
 
-COPY web/*.json ./
+COPY *.json *js ./
 RUN npm ci
-COPY web/public public
-COPY web/src src
-
+COPY web web
 RUN npm run build
 
 

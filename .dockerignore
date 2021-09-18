@@ -2,6 +2,6 @@
 .git*
 Dockerfile
 docker-compose*
-*.md
-**/*.md
-web/node_modules
+README.md
+node_modules
+build
