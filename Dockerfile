@@ -24,7 +24,7 @@ RUN adduser -S -u 10001 scratchuser
 
 
 # The final image
-FROM scratch
+FROM alpine
 
 WORKDIR /app
 
@@ -34,7 +34,7 @@ COPY --from=server-build /app/go-famtree ./
 # Run under non-privileged user with minimal write permissions
 USER 10001
 
-CMD ["./go-famtree"]
+CMD ["top"]
 
 # Heroku redefines exposed port
 ENV PORT=8080
