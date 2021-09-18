@@ -34,7 +34,7 @@ COPY --from=server-build /app/go-famtree ./
 # Run under non-privileged user with minimal write permissions
 USER 10001
 
-CMD ["./go-famtree"]
+CMD ["/app/go-famtree"]
 
 # Heroku redefines exposed port
 ENV PORT=8080
