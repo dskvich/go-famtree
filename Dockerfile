@@ -18,7 +18,6 @@ WORKDIR /app
 COPY . ./
 RUN go get -d -v
 RUN CGO_ENABLED=0 go build -o go-famtree .
-RUN chmod +x ./go-famtree
 
 # Create user for the scratch image
 RUN adduser -S -u 10001 scratchuser
