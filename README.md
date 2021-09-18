@@ -4,6 +4,8 @@ A relatively lightweight simple app:
 * Server API using Golang
 * UI is built with Svelte + Snowpack
 
+CI: https://go-famtree.herokuapp.com
+
 ## Running in Docker
 
 `docker-compose up --build`
