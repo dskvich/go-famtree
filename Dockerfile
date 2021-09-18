@@ -15,7 +15,7 @@ RUN apk update && apk add --no-cache git
 
 WORKDIR /app
 
-COPY . ./
+COPY . /app/
 RUN go get -d -v
 RUN CGO_ENABLED=0 go build -o go-famtree .
 
@@ -28,13 +28,13 @@ FROM scratch
 
 WORKDIR /app
 
-COPY --from=ui-build /app/build ./build
-COPY --from=server-build /app/go-famtree ./
+COPY --from=ui-build /app/build /app/build
+COPY --from=server-build /app/go-famtree /app
 
 # Run under non-privileged user with minimal write permissions
 USER 10001
 
-CMD ["/app/go-famtree"]
+CMD ["./go-famtree"]
 
 # Heroku redefines exposed port
 ENV PORT=8080
