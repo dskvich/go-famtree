@@ -1,3 +1,9 @@
+import proxy from 'http2-proxy';
+
+const proxyOptions = {
+  hostname: 'localhost', port: 8080
+}
+
 /** @type {import("snowpack").SnowpackUserConfig } */
 export default {
   mount: {
@@ -9,7 +15,7 @@ export default {
     '@snowpack/plugin-svelte',
   ],
   routes: [
-    /* Enable an SPA Fallback in development: */
+    {src: '/api/.*', dest: (req, res) => proxy.web(req, res, proxyOptions).catch(() => res.end())},
     // {"match": "routes", "src": ".*", "dest": "/index.html"},
   ],
   optimize: {
@@ -20,7 +26,8 @@ export default {
     /* ... */
   },
   devOptions: {
-    /* ... */
+    port: 3000,
+    open: 'none'
   },
   buildOptions: {
     /* ... */
