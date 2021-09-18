@@ -15,9 +15,10 @@ RUN apk update && apk add --no-cache git
 
 WORKDIR /app
 
-COPY . /app/
+COPY . ./
 RUN go get -d -v
 RUN CGO_ENABLED=0 go build -o go-famtree .
+RUN chmod +x ./go-famtree
 
 # Create user for the scratch image
 RUN adduser -S -u 10001 scratchuser
@@ -28,8 +29,8 @@ FROM scratch
 
 WORKDIR /app
 
-COPY --from=ui-build /app/build /app/build
-COPY --from=server-build /app/go-famtree /app
+COPY --from=ui-build /app/build ./build
+COPY --from=server-build /app/go-famtree ./
 
 # Run under non-privileged user with minimal write permissions
 USER 10001
