@@ -27,6 +27,16 @@ In the project directory, you can run:
 
 Instructs the Go compiler to compile and run a program.
 
-### `go build main.go`
+### `go build`
 
 Creates a binary executable file.
+
+# How to build and run app in docker
+
+### docker build -t go-famtree .
+
+Builds an image from a Dockerfile with the name "go-famtree".
+
+### docker run go-famtree
+
+Runs "go-famtree" as a container on the host.

@@ -7,7 +7,7 @@ import (
 )
 
 func serveStatic(app *fiber.App) {
-	app.Static("/", "./client/build")
+	app.Static("/", "./web/build")
 }
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8000"
+		port = "8080"
 	}
 
 	app.Listen(":" + port)
