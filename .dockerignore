@@ -1,4 +1,7 @@
-.git
-.gitignore
-**/node_modules
+.idea
+.git*
+Dockerfile
+docker-compose*
+*.md
 **/*.md
+web/node_modules
