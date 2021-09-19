@@ -1,38 +1,36 @@
 package main
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"encoding/json"
+	"net/http"
 
-	"os"
+	"github.com/joffrua/go-famtree/internal/httpserver"
 )
-
-func serveStatic(app *fiber.App) {
-	app.Static("/", "./build")
-}
 
 type User struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 }
 
-func main() {
-	app := fiber.New()
-
-	serveStatic(app)
-
-	app.Get("/api/users", func(c *fiber.Ctx) error {
-		res := []User{
-			{"John", "Doe"},
-			{"Mary", "Jane"},
-		}
-
-		return c.Status(fiber.StatusOK).JSON(res)
-	})
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+func GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	users := []User{
+		{"John", "Doe"},
+		{"Mary", "Jane"},
 	}
+	json.NewEncoder(w).Encode(users)
+}
 
-	app.Listen(":" + port)
+func GetUser(w http.ResponseWriter, r *http.Request) {
+	user := User{"John", "Doe"}
+	json.NewEncoder(w).Encode(user)
+}
+
+func main() {
+	s := httpserver.NewBuilder()
+	s.AddRoute(http.MethodGet, "/api/users", GetAllUsers)
+	s.AddRoute(http.MethodGet, "/api/users/1", GetUser)
+
+	s.ServeStatic("/", "./build")
+
+	s.ListenAndServe()
 }

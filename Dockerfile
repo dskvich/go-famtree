@@ -16,8 +16,8 @@ RUN apk update && apk add --no-cache git
 WORKDIR /app
 
 COPY . ./
-RUN go get -d -v
-RUN CGO_ENABLED=0 go build -o go-famtree .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go get -d -v
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go-famtree .
 
 
 # The final image
