@@ -10,14 +10,14 @@ RUN npm run build
 
 
 # This image builds server side
-FROM golang:alpine as server-build
+FROM golang:1.17-alpine as server-build
 RUN apk update && apk add --no-cache git
 
 WORKDIR /app
 
 COPY . ./
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go get -d -v
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go-famtree .
+ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+RUN go build -ldflags="-s -w" -o go-famtree .
 
 
 # The final image

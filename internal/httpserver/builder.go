@@ -1,19 +1,29 @@
 package httpserver
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/gorilla/mux"
+	_ "github.com/joffrua/go-famtree/docs"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type builder struct {
 	router *mux.Router
+	port   string
 }
 
 func NewBuilder() *builder {
 	b := new(builder)
 	b.router = mux.NewRouter()
+
+	b.port = os.Getenv("PORT")
+	if b.port == "" {
+		b.port = "8080"
+	}
+
 	return b
 }
 
@@ -25,13 +35,17 @@ func (b *builder) ServeStatic(path, dir string) {
 	b.router.PathPrefix(path).Handler(http.FileServer(http.Dir(dir)))
 }
 
-func (b *builder) ListenAndServe() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
+func (b *builder) AddSwagger(path string) {
+	b.router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
+		httpSwagger.URL(fmt.Sprintf("http://localhost:%s/swagger/doc.json", b.port)),
+		httpSwagger.DeepLinking(true),
+		httpSwagger.DocExpansion("none"),
+		httpSwagger.DomID("#swagger-ui"),
+	))
+}
 
-	if err := http.ListenAndServe(":"+port, b.router); err != nil {
+func (b *builder) ListenAndServe() {
+	if err := http.ListenAndServe(":"+b.port, b.router); err != nil {
 		panic(err.Error())
 	}
 }
