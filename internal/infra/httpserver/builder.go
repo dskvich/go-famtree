@@ -1,6 +1,7 @@
 package httpserver
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
@@ -44,6 +45,7 @@ func (b *builder) AddSwagger(path string) {
 }
 
 func (b *builder) ListenAndServe() {
+	fmt.Println("Start server on: ", b.port)
 	if err := http.ListenAndServe(":"+b.port, b.router); err != nil {
 		panic(err.Error())
 	}

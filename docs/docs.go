@@ -32,8 +32,255 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/trees": {
+            "get": {
+                "description": "List all trees",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trees"
+                ],
+                "summary": "List all trees",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.Tree"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create by json tree",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trees"
+                ],
+                "summary": "Create a new tree",
+                "parameters": [
+                    {
+                        "description": "Create a new tree",
+                        "name": "tree",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Tree"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Tree"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/trees/{tree_id}": {
+            "get": {
+                "description": "Get a tree by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trees"
+                ],
+                "summary": "Get a tree",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tree ID",
+                        "name": "tree_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Tree"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete by tree ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trees"
+                ],
+                "summary": "Delete a tree",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tree ID",
+                        "name": "tree_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update by json tree",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trees"
+                ],
+                "summary": "Update a tree",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tree ID",
+                        "name": "tree_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update tree",
+                        "name": "tree",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Tree"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Tree"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
+                "description": "List all users",
                 "consumes": [
                     "application/json"
                 ],
@@ -50,26 +297,26 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/main.User"
+                                "$ref": "#/definitions/domain.User"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/main.HTTPError"
+                            "$ref": "#/definitions/httpserver.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/main.HTTPError"
+                            "$ref": "#/definitions/httpserver.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/main.HTTPError"
+                            "$ref": "#/definitions/httpserver.Error"
                         }
                     }
                 }
@@ -77,6 +324,7 @@ var doc = `{
         },
         "/users/{user_id}": {
             "get": {
+                "description": "Get a user by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -86,7 +334,7 @@ var doc = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Get user by given user_id",
+                "summary": "Get a user",
                 "parameters": [
                     {
                         "type": "integer",
@@ -100,25 +348,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/main.User"
+                            "$ref": "#/definitions/domain.User"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/main.HTTPError"
+                            "$ref": "#/definitions/httpserver.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/main.HTTPError"
+                            "$ref": "#/definitions/httpserver.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/main.HTTPError"
+                            "$ref": "#/definitions/httpserver.Error"
                         }
                     }
                 }
@@ -126,7 +374,32 @@ var doc = `{
         }
     },
     "definitions": {
-        "main.HTTPError": {
+        "domain.Tree": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.User": {
+            "type": "object",
+            "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpserver.Error": {
             "type": "object",
             "properties": {
                 "code": {
@@ -136,17 +409,6 @@ var doc = `{
                 "message": {
                     "type": "string",
                     "example": "status bad request"
-                }
-            }
-        },
-        "main.User": {
-            "type": "object",
-            "properties": {
-                "first_name": {
-                    "type": "string"
-                },
-                "last_name": {
-                    "type": "string"
                 }
             }
         }
