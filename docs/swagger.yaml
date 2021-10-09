@@ -110,7 +110,7 @@ paths:
         in: path
         name: tree_id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -140,7 +140,7 @@ paths:
         in: path
         name: tree_id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -163,7 +163,7 @@ paths:
       summary: Get a tree
       tags:
       - Trees
-    patch:
+    put:
       consumes:
       - application/json
       description: Update by json tree
@@ -172,7 +172,7 @@ paths:
         in: path
         name: tree_id
         required: true
-        type: integer
+        type: string
       - description: Update tree
         in: body
         name: tree

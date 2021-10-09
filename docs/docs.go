@@ -141,11 +141,68 @@ var doc = `{
                 "summary": "Get a tree",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Tree ID",
                         "name": "tree_id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Tree"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update by json tree",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trees"
+                ],
+                "summary": "Update a tree",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tree ID",
+                        "name": "tree_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update tree",
+                        "name": "tree",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Tree"
+                        }
                     }
                 ],
                 "responses": {
@@ -189,7 +246,7 @@ var doc = `{
                 "summary": "Delete a tree",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Tree ID",
                         "name": "tree_id",
                         "in": "path",
@@ -199,63 +256,6 @@ var doc = `{
                 "responses": {
                     "204": {
                         "description": ""
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "description": "Update by json tree",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Trees"
-                ],
-                "summary": "Update a tree",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Tree ID",
-                        "name": "tree_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update tree",
-                        "name": "tree",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.Tree"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/domain.Tree"
-                        }
                     },
                     "400": {
                         "description": "Bad Request",

@@ -9,9 +9,8 @@ type User struct {
 }
 
 type UserRepository interface {
-	New(tree *User) error
-	FindByID(id uuid.UUID) (*User, error)
-	Update(id uuid.UUID, name, description string) error
-	FindAll(userId uuid.UUID) ([]User, error)
-	Remove(id uuid.UUID) error
+	FindAll() ([]User, error)
+	FindByID(uuid.UUID) (*User, error)
+	Persist(*User) error
+	Delete(uuid.UUID) error
 }

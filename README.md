@@ -10,6 +10,11 @@ CI: https://go-famtree.herokuapp.com
 
 `docker-compose up --build`
 
+or to just start the DB:
+`docker-compose up -d db`
+
+This will bind to `127.0.0.1:65432` by default
+
 # Development
 
 After clone:

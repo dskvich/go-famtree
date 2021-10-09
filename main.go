@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
 	"net/http"
+
+	db "github.com/joffrua/go-famtree/internal/infra/db"
 
 	"github.com/joffrua/go-famtree/internal/controller"
 
@@ -22,18 +25,22 @@ import (
 
 // @BasePath /api
 func main() {
-	userCtrl := controller.NewUserController()
-	treeCtrl := controller.NewTreeController()
+	pg := db.NewPg(context.Background())
+	userRepo := db.NewUserPgRepository(pg)
+	treeRepo := db.NewTreePgRepository(pg)
+
+	userCtrl := controller.NewUserController(userRepo)
+	treeCtrl := controller.NewTreeController(treeRepo)
 
 	s := httpserver.NewBuilder()
 	s.AddRoute(http.MethodGet, "/api/users", userCtrl.GetAllUsers)
-	s.AddRoute(http.MethodGet, "/api/users/{userID}", userCtrl.GetUser)
+	s.AddRoute(http.MethodGet, "/api/users/{id}", userCtrl.GetUser)
 
 	s.AddRoute(http.MethodPost, "/api/trees", treeCtrl.NewTree)
 	s.AddRoute(http.MethodGet, "/api/trees", treeCtrl.GetAllTrees)
-	s.AddRoute(http.MethodGet, "/api/trees/{treeID}", treeCtrl.GetTree)
-	s.AddRoute(http.MethodPatch, "/api/trees/{treeID}", treeCtrl.UpdateTree)
-	s.AddRoute(http.MethodDelete, "/api/trees/{treeID}", treeCtrl.DeleteTree)
+	s.AddRoute(http.MethodGet, "/api/trees/{id}", treeCtrl.GetTree)
+	s.AddRoute(http.MethodPut, "/api/trees/{id}", treeCtrl.UpdateTree)
+	s.AddRoute(http.MethodDelete, "/api/trees/{id}", treeCtrl.DeleteTree)
 
 	s.AddSwagger("/swagger/")
 	s.ServeStatic("/", "./build")

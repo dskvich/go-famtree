@@ -3,16 +3,21 @@ package controller
 import (
 	"net/http"
 
+	"github.com/google/uuid"
+
 	"github.com/joffrua/go-famtree/internal/infra/httpserver"
 
 	"github.com/joffrua/go-famtree/internal/domain"
 )
 
 type UserController struct {
+	repo domain.UserRepository
 }
 
-func NewUserController() *UserController {
-	return &UserController{}
+func NewUserController(repo domain.UserRepository) *UserController {
+	return &UserController{
+		repo: repo,
+	}
 }
 
 // GetAllUsers godoc
@@ -27,12 +32,12 @@ func NewUserController() *UserController {
 // @Failure 500 {object} httpserver.Error
 // @Router /users [get]
 func (ctrl UserController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	users := []domain.User{
-		{FirstName: "John", LastName: "Doe"},
-		{FirstName: "Mary", LastName: "Jane"},
+	u, err := ctrl.repo.FindAll()
+	if err != nil {
+		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
 	}
 
-	httpserver.RespondWithJSON(w, http.StatusOK, users)
+	httpserver.RespondWithJSON(w, http.StatusOK, u)
 }
 
 // GetUser godoc
@@ -48,7 +53,12 @@ func (ctrl UserController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} httpserver.Error
 // @Router /users/{user_id} [get]
 func (ctrl UserController) GetUser(w http.ResponseWriter, r *http.Request) {
-	user := domain.User{FirstName: "John", LastName: "Doe"}
+	ID, _ := uuid.Parse("91cf6ac3-ec86-4e6f-8b60-7f3cff879ec5")
 
-	httpserver.RespondWithJSON(w, http.StatusOK, user)
+	u, err := ctrl.repo.FindByID(ID)
+	if err != nil {
+		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
+	}
+
+	httpserver.RespondWithJSON(w, http.StatusOK, u)
 }
