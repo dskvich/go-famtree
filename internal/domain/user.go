@@ -1,11 +1,21 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 // User example
 type User struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	ID           uuid.UUID `json:"id"`
+	CreatedAt    time.Time `json:"created_at"`
+	Login        string    `json:"login"`
+	Role         string    `json:"role"`
+	Lang         string    `json:"lang"`
+	Name         string    `json:"name"`
+	Email        string    `json:"email"`
+	PasswordHash string    `json:"password_hash"`
 }
 
 type UserRepository interface {

@@ -1,10 +1,15 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 // Tree example
 type Tree struct {
 	ID          uuid.UUID `json:"id"`
+	CreatedAt   time.Time `json:"created_at"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 }

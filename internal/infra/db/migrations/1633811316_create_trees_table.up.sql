@@ -1,6 +1,6 @@
 create table trees(
-  id uuid primary key default uuid_generate_v4(),
-  created_at timestamptz not null default now(),
-  name varchar,
-  description varchar
+    id uuid default uuid_generate_v4() constraint users_pk primary key,
+    created_at timestamptz default current_timestamp,
+    name varchar(100),
+    description varchar(1000)
 )

@@ -1,10 +1,15 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 // Person example
 type Person struct {
 	ID         uuid.UUID `json:"id"`
+	CreatedAt  time.Time `json:"created_at"`
 	TreeID     uuid.UUID `json:"tree_id"`
 	FatherID   uuid.UUID `json:"father_id"`
 	MotherID   uuid.UUID `json:"mother_id"`
@@ -18,9 +23,8 @@ type Person struct {
 }
 
 type PersonRepository interface {
-	New(tree *Person) error
-	FindByID(id uuid.UUID) (*Person, error)
-	Update(id uuid.UUID, name, description string) error
-	FindAll(userId uuid.UUID) ([]Person, error)
-	Remove(id uuid.UUID) error
+	FindAll() ([]Person, error)
+	FindByID(uuid.UUID) (*Person, error)
+	Persist(*Person) error
+	Delete(uuid.UUID) error
 }

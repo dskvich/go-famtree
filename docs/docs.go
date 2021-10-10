@@ -391,10 +391,28 @@ var doc = `{
         "domain.User": {
             "type": "object",
             "properties": {
-                "first_name": {
+                "created_at": {
                     "type": "string"
                 },
-                "last_name": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lang": {
+                    "type": "string"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password_hash": {
+                    "type": "string"
+                },
+                "role": {
                     "type": "string"
                 }
             }
