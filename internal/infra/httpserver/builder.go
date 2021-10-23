@@ -33,6 +33,8 @@ func NewBuilder() *builder {
 		b.port = "8080"
 	}
 
+	log.Infof("get env PORT=%s", b.port)
+
 	b.server = &http.Server{
 		Addr:    net.JoinHostPort("localhost", b.port),
 		Handler: b.router,
