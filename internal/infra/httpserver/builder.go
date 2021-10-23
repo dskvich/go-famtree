@@ -34,7 +34,7 @@ func NewBuilder() *builder {
 	}
 
 	b.server = &http.Server{
-		Addr:    net.JoinHostPort("127.0.0.1", b.port),
+		Addr:    net.JoinHostPort("localhost", b.port),
 		Handler: b.router,
 	}
 
@@ -61,7 +61,7 @@ func (b *builder) AddSwagger(path string) {
 func (b *builder) Start() {
 	go func() {
 		if err := b.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Errorf("could not listen on port %s: %v\n", b.port, err)
+			log.Errorf("could not listen on port %s: %+v\n", b.port, err)
 		}
 	}()
 	log.Infof("http server started on port: %s", b.port)
