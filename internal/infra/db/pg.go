@@ -33,27 +33,27 @@ func NewPg(ctx context.Context) *Pg {
 		log.Panicf("Configuration failed: %+v", err)
 	}
 
-	// err := db.migrate(); err != nil {
-	//	log.Panicf("Migration failed: %+v", err)
-	//}
+	if err := db.migrate(); err != nil {
+		log.Panicf("Migration failed: %+v", err)
+	}
 
 	return db
 }
 
 func (db *Pg) configure() error {
 	db.url = os.Getenv("DATABASE_URL")
-	log.Infof("get env DATABASE_URL=%s", db.url)
+	log.Infof("loaded env DATABASE_URL=%s", db.url)
 
 	if db.url == "" {
 		host := os.Getenv("DB_HOST")
-		log.Infof("get env DB_HOST=%s", host)
+		log.Infof("loaded env DB_HOST=%s", host)
 		if host == "" {
 			host = "localhost:65432"
 		}
-		db.url = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=require", dbName, dbName, host, dbName)
+		db.url = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", dbName, dbName, host, dbName)
 	}
 
-	log.Infof("dbUrl: %s", db.url)
+	log.Infof("pg connection string: %s", db.url)
 
 	var err error
 	db.opts, err = pg.ParseURL(db.url)
