@@ -46,7 +46,7 @@ func (ctrl UserController) GetAllUsers(w http.ResponseWriter, _ *http.Request) {
 // @Tags Users
 // @Accept json
 // @Produce json
-// @Param user_id path int true "User ID"
+// @Param user_id path string true "User ID"
 // @Success 200 {object} domain.User
 // @Failure 400 {object} httpserver.Error
 // @Failure 404 {object} httpserver.Error
