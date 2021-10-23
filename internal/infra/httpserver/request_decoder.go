@@ -54,7 +54,7 @@ func DecodeJSONBody(w http.ResponseWriter, r *http.Request, dst interface{}) err
 	}
 
 	err = dec.Decode(&struct{}{})
-	if err != io.EOF {
+	if !errors.Is(err, io.EOF) {
 		return fmt.Errorf("request body must only contain a single JSON object")
 	}
 

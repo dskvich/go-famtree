@@ -33,7 +33,7 @@ func NewTreeController(repo domain.TreeRepository) *TreeController {
 // @Failure 404 {object} httpserver.Error
 // @Failure 500 {object} httpserver.Error
 // @Router /trees [get]
-func (ctrl TreeController) GetAllTrees(w http.ResponseWriter, r *http.Request) {
+func (ctrl TreeController) GetAllTrees(w http.ResponseWriter, _ *http.Request) {
 	t, err := ctrl.repo.FindAll()
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)

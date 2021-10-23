@@ -18,7 +18,7 @@
         <ul>
             {#each users as user}
                 <li>
-                    {user.first_name} {user.last_name}
+                    {user.login} {user.name}
                 </li>
             {:else}
                 <p>loading...</p>

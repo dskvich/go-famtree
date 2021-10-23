@@ -21,9 +21,9 @@ func (repo UserPgRepository) FindAll() ([]domain.User, error) {
 	return u, err
 }
 
-func (repo UserPgRepository) FindByID(ID uuid.UUID) (*domain.User, error) {
+func (repo UserPgRepository) FindByID(id uuid.UUID) (*domain.User, error) {
 	var u domain.User
-	err := repo.pg.GetConnection().Model(&u).Where("id = ?", ID).Select()
+	err := repo.pg.GetConnection().Model(&u).Where("id = ?", id).Select()
 	return &u, err
 }
 
@@ -32,7 +32,7 @@ func (repo UserPgRepository) Persist(u *domain.User) error {
 	return err
 }
 
-func (repo UserPgRepository) Delete(ID uuid.UUID) error {
-	_, err := repo.pg.GetConnection().Model((*domain.User)(nil)).Where("id = ?", ID).Delete()
+func (repo UserPgRepository) Delete(id uuid.UUID) error {
+	_, err := repo.pg.GetConnection().Model((*domain.User)(nil)).Where("id = ?", id).Delete()
 	return err
 }

@@ -3,8 +3,11 @@ package main
 import (
 	"context"
 	"net/http"
+	"os"
 
-	db "github.com/joffrua/go-famtree/internal/infra/db"
+	log "github.com/sirupsen/logrus"
+
+	"github.com/joffrua/go-famtree/internal/infra/db"
 
 	"github.com/joffrua/go-famtree/internal/controller"
 
@@ -14,7 +17,7 @@ import (
 // @title Go Family Tree API
 // @version 1.0
 // @description Some description
-// @termsOfService http://swagger.io/terms/
+// @termsOfService http://swagger.io/terms/ap
 
 // @contact.name API Support
 // @contact.url http://www.swagger.io/support
@@ -25,6 +28,8 @@ import (
 
 // @BasePath /api
 func main() {
+	log.SetOutput(os.Stdout)
+
 	pg := db.NewPg(context.Background())
 	userRepo := db.NewUserPgRepository(pg)
 	treeRepo := db.NewTreePgRepository(pg)
@@ -43,7 +48,7 @@ func main() {
 	s.AddRoute(http.MethodDelete, "/api/trees/{id}", treeCtrl.DeleteTree)
 
 	s.AddSwagger("/swagger/")
-	s.ServeStatic("/", "./build")
+	s.AddStaticDir("/", "./build")
 
-	s.ListenAndServe()
+	s.Start()
 }

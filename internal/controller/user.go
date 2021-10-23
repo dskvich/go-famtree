@@ -31,7 +31,7 @@ func NewUserController(repo domain.UserRepository) *UserController {
 // @Failure 404 {object} httpserver.Error
 // @Failure 500 {object} httpserver.Error
 // @Router /users [get]
-func (ctrl UserController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+func (ctrl UserController) GetAllUsers(w http.ResponseWriter, _ *http.Request) {
 	u, err := ctrl.repo.FindAll()
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
@@ -52,7 +52,7 @@ func (ctrl UserController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {object} httpserver.Error
 // @Failure 500 {object} httpserver.Error
 // @Router /users/{user_id} [get]
-func (ctrl UserController) GetUser(w http.ResponseWriter, r *http.Request) {
+func (ctrl UserController) GetUser(w http.ResponseWriter, _ *http.Request) {
 	ID, _ := uuid.Parse("91cf6ac3-ec86-4e6f-8b60-7f3cff879ec5")
 
 	u, err := ctrl.repo.FindByID(ID)

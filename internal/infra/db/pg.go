@@ -114,11 +114,11 @@ func (db *Pg) migrate() error {
 
 type pgLogger struct{}
 
-func (_ pgLogger) BeforeQuery(ctx context.Context, _ *pg.QueryEvent) (context.Context, error) {
+func (l pgLogger) BeforeQuery(ctx context.Context, _ *pg.QueryEvent) (context.Context, error) {
 	return ctx, nil
 }
 
-func (_ pgLogger) AfterQuery(_ context.Context, q *pg.QueryEvent) error {
+func (l pgLogger) AfterQuery(_ context.Context, q *pg.QueryEvent) error {
 	b, _ := q.FormattedQuery()
 	fmt.Println(string(b))
 	return nil
