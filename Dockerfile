@@ -17,7 +17,7 @@ WORKDIR /app
 
 COPY . ./
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
-RUN go build -ldflags="-s -w" -o go-famtree .
+RUN go build -ldflags="-s -w" -o go-famtree ./cmd/go-famtree
 
 
 # The final image
