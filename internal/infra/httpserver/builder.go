@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/joffrua/go-famtree/config"
+
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
@@ -18,25 +20,19 @@ import (
 )
 
 type builder struct {
+	cfg    *config.Config
 	router *mux.Router
 	server *http.Server
-	port   string
 }
 
-func NewBuilder() *builder {
+func NewBuilder(cfg *config.Config) *builder {
 	b := new(builder)
+	b.cfg = cfg
 	b.router = mux.NewRouter()
 	b.router.Use(Logging)
 
-	b.port = os.Getenv("PORT")
-	if b.port == "" {
-		b.port = "8080"
-	}
-
-	log.Infof("loaded env PORT=%s", b.port)
-
 	b.server = &http.Server{
-		Addr:    net.JoinHostPort("", b.port),
+		Addr:    net.JoinHostPort("", b.cfg.HTTP.Port),
 		Handler: b.router,
 	}
 
@@ -63,10 +59,10 @@ func (b *builder) AddSwagger(path string) {
 func (b *builder) Start() {
 	go func() {
 		if err := b.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Errorf("could not listen on port %s: %+v\n", b.port, err)
+			log.Errorf("could not listen on port %s: %+v\n", b.cfg.HTTP.Port, err)
 		}
 	}()
-	log.Infof("http server started on port: %s", b.port)
+	log.Infof("http server started on port: %s", b.cfg.HTTP.Port)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)

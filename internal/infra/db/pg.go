@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
-	"strconv"
 	"time"
+
+	"github.com/joffrua/go-famtree/config"
 
 	log "github.com/sirupsen/logrus"
 
@@ -17,17 +17,17 @@ import (
 )
 
 type Pg struct {
+	cfg  *config.Config
 	url  string
 	opts *pg.Options
 	conn *pg.DB
-	ctx  context.Context
 }
 
 const dbName = "app"
 
-func NewPg(ctx context.Context) *Pg {
+func NewPg(cfg *config.Config) *Pg {
 	db := new(Pg)
-	db.ctx = ctx
+	db.cfg = cfg
 
 	if err := db.configure(); err != nil {
 		log.Panicf("Configuration failed: %+v", err)
@@ -41,18 +41,14 @@ func NewPg(ctx context.Context) *Pg {
 }
 
 func (db *Pg) configure() error {
-	db.url = os.Getenv("DATABASE_URL")
-	log.Infof("loaded env DATABASE_URL=%s", db.url)
-
+	db.url = db.cfg.PG.URL
 	if db.url == "" {
-		host := os.Getenv("DB_HOST")
-		log.Infof("loaded env DB_HOST=%s", host)
+		host := db.cfg.PG.Host
 		if host == "" {
 			host = "localhost:65432"
 		}
 		db.url = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", dbName, dbName, host, dbName)
 	}
-
 	log.Infof("pg connection string: %s", db.url)
 
 	var err error
@@ -76,8 +72,7 @@ func (db *Pg) configure() error {
 
 	db.conn = pg.Connect(db.opts)
 
-	showSQL := os.Getenv("DB_SHOW_SQL")
-	if showSQL, err := strconv.ParseBool(showSQL); showSQL && err == nil {
+	if db.cfg.PG.ShowSQL {
 		db.conn.AddQueryHook(pgLogger{})
 	}
 
