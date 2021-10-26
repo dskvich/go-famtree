@@ -16,19 +16,19 @@ func NewTreePgRepository(pg *Pg) *TreePgRepository {
 }
 
 func (repo TreePgRepository) FindAll() ([]domain.Tree, error) {
-	var u []domain.Tree
-	err := repo.pg.GetConnection().Model(&u).Select()
-	return u, err
+	t := []domain.Tree{}
+	err := repo.pg.GetConnection().Model(&t).Select()
+	return t, err
 }
 
 func (repo TreePgRepository) FindByID(id uuid.UUID) (*domain.Tree, error) {
-	var u domain.Tree
-	err := repo.pg.GetConnection().Model(&u).Where("id = ?", id).Select()
-	return &u, err
+	t := domain.Tree{}
+	err := repo.pg.GetConnection().Model(&t).Where("id = ?", id).Select()
+	return &t, err
 }
 
-func (repo TreePgRepository) Persist(u *domain.Tree) error {
-	_, err := repo.pg.GetConnection().Model(u).OnConflict("(id) DO UPDATE").Insert()
+func (repo TreePgRepository) Persist(t *domain.Tree) error {
+	_, err := repo.pg.GetConnection().Model(t).OnConflict("(id) DO UPDATE").Insert()
 	return err
 }
 

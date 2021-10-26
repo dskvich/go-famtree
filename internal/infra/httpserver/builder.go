@@ -28,7 +28,7 @@ type builder struct {
 func NewBuilder(cfg *config.Config) *builder {
 	b := new(builder)
 	b.cfg = cfg
-	b.router = mux.NewRouter()
+	b.router = mux.NewRouter().StrictSlash(true)
 	b.router.Use(Logging)
 
 	b.server = &http.Server{
@@ -50,9 +50,6 @@ func (b *builder) AddStaticDir(path, dir string) {
 func (b *builder) AddSwagger(path string) {
 	b.router.PathPrefix(path).Handler(httpSwagger.Handler(
 		httpSwagger.URL("/swagger/doc.json"),
-		httpSwagger.DeepLinking(true),
-		httpSwagger.DocExpansion("none"),
-		httpSwagger.DomID("#swagger-ui"),
 	))
 }
 

@@ -35,6 +35,7 @@ func (ctrl UserController) GetAllUsers(w http.ResponseWriter, _ *http.Request) {
 	u, err := ctrl.repo.FindAll()
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	httpserver.RespondWithJSON(w, http.StatusOK, u)
@@ -58,6 +59,7 @@ func (ctrl UserController) GetUser(w http.ResponseWriter, _ *http.Request) {
 	u, err := ctrl.repo.FindByID(ID)
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	httpserver.RespondWithJSON(w, http.StatusOK, u)

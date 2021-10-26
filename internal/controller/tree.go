@@ -37,6 +37,7 @@ func (ctrl TreeController) GetAllTrees(w http.ResponseWriter, _ *http.Request) {
 	t, err := ctrl.repo.FindAll()
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	httpserver.RespondWithJSON(w, http.StatusOK, t)
@@ -59,11 +60,13 @@ func (ctrl TreeController) GetTree(w http.ResponseWriter, r *http.Request) {
 	ID, err := uuid.Parse(params["id"])
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusBadRequest, err)
+		return
 	}
 
 	t, err := ctrl.repo.FindByID(ID)
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	httpserver.RespondWithJSON(w, http.StatusOK, t)
@@ -87,11 +90,13 @@ func (ctrl TreeController) NewTree(w http.ResponseWriter, r *http.Request) {
 	err := httpserver.DecodeJSONBody(w, r, &t)
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusBadRequest, err)
+		return
 	}
 
 	err = ctrl.repo.Persist(&t)
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	httpserver.RespondWithJSON(w, http.StatusCreated, t)
@@ -116,12 +121,14 @@ func (ctrl TreeController) UpdateTree(w http.ResponseWriter, r *http.Request) {
 	err := httpserver.DecodeJSONBody(w, r, &t)
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusBadRequest, err)
+		return
 	}
 
 	params := mux.Vars(r)
 	ID, err := uuid.Parse(params["id"])
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusBadRequest, err)
+		return
 	}
 
 	t.ID = ID
@@ -129,6 +136,7 @@ func (ctrl TreeController) UpdateTree(w http.ResponseWriter, r *http.Request) {
 	err = ctrl.repo.Persist(&t)
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	httpserver.RespondWithJSON(w, http.StatusOK, t)
@@ -151,10 +159,12 @@ func (ctrl TreeController) DeleteTree(w http.ResponseWriter, r *http.Request) {
 	ID, err := uuid.Parse(params["id"])
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusBadRequest, err)
+		return
 	}
 
 	if err = ctrl.repo.Delete(ID); err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	httpserver.RespondWithJSON(w, http.StatusNoContent, nil)
