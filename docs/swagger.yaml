@@ -3,10 +3,12 @@ definitions:
   domain.Tree:
     properties:
       created_at:
+        format: date-time
         type: string
       description:
         type: string
       id:
+        format: uuid
         type: string
       name:
         type: string
@@ -14,18 +16,19 @@ definitions:
   domain.User:
     properties:
       created_at:
+        format: date-time
         type: string
       email:
+        format: email
         type: string
       id:
+        format: uuid
         type: string
       lang:
         type: string
       login:
         type: string
       name:
-        type: string
-      password_hash:
         type: string
       role:
         type: string

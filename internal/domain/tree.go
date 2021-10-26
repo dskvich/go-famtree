@@ -8,8 +8,8 @@ import (
 
 // Tree example
 type Tree struct {
-	ID          uuid.UUID `json:"id"`
-	CreatedAt   time.Time `json:"created_at"`
+	ID          uuid.UUID `json:"id" format:"uuid"`
+	CreatedAt   time.Time `json:"created_at" format:"date-time"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 }

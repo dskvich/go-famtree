@@ -378,13 +378,15 @@ var doc = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "format": "date-time"
                 },
                 "description": {
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "format": "uuid"
                 },
                 "name": {
                     "type": "string"
@@ -395,13 +397,16 @@ var doc = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "format": "date-time"
                 },
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "format": "email"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "format": "uuid"
                 },
                 "lang": {
                     "type": "string"
@@ -410,9 +415,6 @@ var doc = `{
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "password_hash": {
                     "type": "string"
                 },
                 "role": {
