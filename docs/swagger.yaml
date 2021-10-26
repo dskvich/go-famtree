@@ -2,6 +2,8 @@ basePath: /api
 definitions:
   domain.Tree:
     properties:
+      created_at:
+        type: string
       description:
         type: string
       id:
@@ -46,7 +48,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
+  termsOfService: http://swagger.io/terms/ap
   title: Go Family Tree API
   version: "1.0"
 paths:
@@ -252,7 +254,7 @@ paths:
         in: path
         name: user_id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:

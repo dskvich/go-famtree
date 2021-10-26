@@ -17,7 +17,7 @@ var doc = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/",
+        "termsOfService": "http://swagger.io/terms/ap",
         "contact": {
             "name": "API Support",
             "url": "http://www.swagger.io/support",
@@ -337,7 +337,7 @@ var doc = `{
                 "summary": "Get a user",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "User ID",
                         "name": "user_id",
                         "in": "path",
@@ -377,6 +377,9 @@ var doc = `{
         "domain.Tree": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
