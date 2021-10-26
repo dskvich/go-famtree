@@ -6,12 +6,16 @@ import (
 	"github.com/google/uuid"
 )
 
-// Person example
+// swagger:model
 type Person struct {
-	ID         uuid.UUID `json:"id"`
-	CreatedAt  time.Time `json:"created_at"`
-	TreeID     uuid.UUID `json:"tree_id"`
-	FatherID   uuid.UUID `json:"father_id"`
+	// swagger:strfmt uuid
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	// swagger:strfmt uuid
+	TreeID uuid.UUID `json:"tree_id"`
+	// swagger:strfmt uuid
+	FatherID uuid.UUID `json:"father_id"`
+	// swagger:strfmt uuid
 	MotherID   uuid.UUID `json:"mother_id"`
 	FirstName  string    `json:"first_name"`
 	LastName   string    `json:"last_name"`

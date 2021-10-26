@@ -1,280 +1,333 @@
 basePath: /api
+consumes:
+- application/json
 definitions:
-  domain.Tree:
-    properties:
-      created_at:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-    type: object
-  domain.User:
-    properties:
-      created_at:
-        type: string
-      email:
-        type: string
-      id:
-        type: string
-      lang:
-        type: string
-      login:
-        type: string
-      name:
-        type: string
-      password_hash:
-        type: string
-      role:
-        type: string
-    type: object
-  httpserver.Error:
+  Error:
     properties:
       code:
-        example: 400
+        format: int64
         type: integer
+        x-go-name: Code
       message:
-        example: status bad request
         type: string
+        x-go-name: Message
     type: object
+    x-go-package: github.com/joffrua/go-famtree/internal/infra/httpserver
+  Person:
+    properties:
+      bio:
+        type: string
+        x-go-name: Bio
+      birth_date:
+        type: string
+        x-go-name: BirthDate
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      death_date:
+        type: string
+        x-go-name: DeathDate
+      father_id:
+        format: uuid
+        type: string
+        x-go-name: FatherID
+      first_name:
+        type: string
+        x-go-name: FirstName
+      id:
+        format: uuid
+        type: string
+        x-go-name: ID
+      last_name:
+        type: string
+        x-go-name: LastName
+      maiden_name:
+        type: string
+        x-go-name: MaidenName
+      mother_id:
+        format: uuid
+        type: string
+        x-go-name: MotherID
+      patronymic:
+        type: string
+        x-go-name: Patronymic
+      tree_id:
+        format: uuid
+        type: string
+        x-go-name: TreeID
+    type: object
+    x-go-package: github.com/joffrua/go-famtree/internal/domain
+  Tree:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: uuid
+        type: string
+        x-go-name: ID
+      name:
+        type: string
+        x-go-name: Name
+    type: object
+    x-go-package: github.com/joffrua/go-famtree/internal/domain
+  UUID:
+    description: |-
+      A UUID is a 128 bit (16 byte) Universal Unique IDentifier as defined in RFC
+      4122.
+    items:
+      format: uint8
+      type: integer
+    type: array
+    x-go-package: github.com/google/uuid
+  User:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      email:
+        format: email
+        type: string
+        x-go-name: Email
+      id:
+        format: uuid
+        type: string
+        x-go-name: ID
+      lang:
+        type: string
+        x-go-name: Lang
+      login:
+        type: string
+        x-go-name: Login
+      name:
+        type: string
+        x-go-name: Name
+      role:
+        type: string
+        x-go-name: Role
+    type: object
+    x-go-package: github.com/joffrua/go-famtree/internal/domain
 info:
-  contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
   description: Some description
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/ap
   title: Go Family Tree API
-  version: "1.0"
+  version: 1.0.0
 paths:
   /trees:
     get:
-      consumes:
-      - application/json
       description: List all trees
-      produces:
-      - application/json
+      operationId: getAllTrees
       responses:
         "200":
-          description: OK
+          description: Tree
           schema:
             items:
-              $ref: '#/definitions/domain.Tree'
+              $ref: '#/definitions/Tree'
             type: array
         "400":
-          description: Bad Request
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
         "404":
-          description: Not Found
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
         "500":
-          description: Internal Server Error
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
       summary: List all trees
       tags:
       - Trees
     post:
-      consumes:
-      - application/json
       description: Create by json tree
+      operationId: newTree
       parameters:
-      - description: Create a new tree
-        in: body
+      - in: body
         name: tree
         required: true
         schema:
-          $ref: '#/definitions/domain.Tree'
-      produces:
-      - application/json
+          $ref: '#/definitions/Tree'
+        x-go-name: Tree
       responses:
         "201":
-          description: Created
+          description: Tree
           schema:
-            $ref: '#/definitions/domain.Tree'
+            $ref: '#/definitions/Tree'
         "400":
-          description: Bad Request
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
         "404":
-          description: Not Found
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
         "500":
-          description: Internal Server Error
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
       summary: Create a new tree
       tags:
       - Trees
   /trees/{tree_id}:
     delete:
-      consumes:
-      - application/json
       description: Delete by tree ID
+      operationId: deleteTree
       parameters:
-      - description: Tree ID
+      - format: uuid
         in: path
         name: tree_id
         required: true
         type: string
-      produces:
-      - application/json
+        x-go-name: TreeID
       responses:
         "204":
           description: ""
         "400":
-          description: Bad Request
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
         "404":
-          description: Not Found
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
         "500":
-          description: Internal Server Error
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
       summary: Delete a tree
       tags:
       - Trees
     get:
-      consumes:
-      - application/json
       description: Get a tree by ID
+      operationId: getTree
       parameters:
-      - description: Tree ID
+      - format: uuid
         in: path
         name: tree_id
         required: true
         type: string
-      produces:
-      - application/json
+        x-go-name: TreeID
       responses:
         "200":
-          description: OK
+          description: Tree
           schema:
-            $ref: '#/definitions/domain.Tree'
+            $ref: '#/definitions/Tree'
         "400":
-          description: Bad Request
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
         "404":
-          description: Not Found
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
         "500":
-          description: Internal Server Error
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
       summary: Get a tree
       tags:
       - Trees
     put:
-      consumes:
-      - application/json
       description: Update by json tree
+      operationId: updateTree
       parameters:
-      - description: Tree ID
+      - format: uuid
         in: path
         name: tree_id
         required: true
         type: string
-      - description: Update tree
-        in: body
+        x-go-name: TreeID
+      - in: body
         name: tree
         required: true
         schema:
-          $ref: '#/definitions/domain.Tree'
-      produces:
-      - application/json
+          $ref: '#/definitions/Tree'
+        x-go-name: Tree
       responses:
         "200":
-          description: OK
+          description: Tree
           schema:
-            $ref: '#/definitions/domain.Tree'
+            $ref: '#/definitions/Tree'
         "400":
-          description: Bad Request
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
         "404":
-          description: Not Found
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
         "500":
-          description: Internal Server Error
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
       summary: Update a tree
       tags:
       - Trees
   /users:
     get:
-      consumes:
-      - application/json
       description: List all users
-      produces:
-      - application/json
+      operationId: getAllUsers
       responses:
         "200":
-          description: OK
+          description: User
           schema:
             items:
-              $ref: '#/definitions/domain.User'
+              $ref: '#/definitions/User'
             type: array
         "400":
-          description: Bad Request
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
         "404":
-          description: Not Found
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
         "500":
-          description: Internal Server Error
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
       summary: List all users
       tags:
       - Users
   /users/{user_id}:
     get:
-      consumes:
-      - application/json
       description: Get a user by ID
+      operationId: getUser
       parameters:
-      - description: User ID
+      - format: uuid
         in: path
         name: user_id
         required: true
         type: string
-      produces:
-      - application/json
+        x-go-name: UserID
       responses:
         "200":
-          description: OK
+          description: User
           schema:
-            $ref: '#/definitions/domain.User'
+            $ref: '#/definitions/User'
         "400":
-          description: Bad Request
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
         "404":
-          description: Not Found
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
         "500":
-          description: Internal Server Error
+          description: Error
           schema:
-            $ref: '#/definitions/httpserver.Error'
+            $ref: '#/definitions/Error'
       summary: Get a user
       tags:
       - Users
+produces:
+- application/json
+schemes:
+- http
 swagger: "2.0"

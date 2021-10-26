@@ -6,16 +6,18 @@ import (
 	"github.com/google/uuid"
 )
 
-// User example
+// swagger:model
 type User struct {
-	ID           uuid.UUID `json:"id"`
-	CreatedAt    time.Time `json:"created_at"`
-	Login        string    `json:"login"`
-	Role         string    `json:"role"`
-	Lang         string    `json:"lang"`
-	Name         string    `json:"name"`
-	Email        string    `json:"email"`
-	PasswordHash string    `json:"password_hash"`
+	ID        uuid.UUID `json:"id" format:"uuid"`
+	CreatedAt time.Time `json:"created_at"`
+	Login     string    `json:"login"`
+	Role      string    `json:"role"`
+	Lang      string    `json:"lang"`
+	Name      string    `json:"name"`
+	// swagger:strfmt email
+	Email string `json:"email"`
+	// swagger:ignore
+	PasswordHash string `json:"password_hash"`
 }
 
 type UserRepository interface {

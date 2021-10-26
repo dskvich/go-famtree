@@ -22,17 +22,17 @@ func NewTreeController(repo domain.TreeRepository) *TreeController {
 	}
 }
 
-// GetAllTrees godoc
-// @Summary List all trees
-// @Description List all trees
-// @Tags Trees
-// @Accept json
-// @Produce json
-// @Success 200 {array} domain.Tree
-// @Failure 400 {object} httpserver.Error
-// @Failure 404 {object} httpserver.Error
-// @Failure 500 {object} httpserver.Error
-// @Router /trees [get]
+// swagger:route GET /trees Trees getAllTrees
+//
+// List all trees
+//
+// List all trees
+//
+// responses:
+//   200: []Tree
+//   400: Error
+//   404: Error
+//   500: Error
 func (ctrl TreeController) GetAllTrees(w http.ResponseWriter, _ *http.Request) {
 	t, err := ctrl.repo.FindAll()
 	if err != nil {
@@ -42,18 +42,17 @@ func (ctrl TreeController) GetAllTrees(w http.ResponseWriter, _ *http.Request) {
 	httpserver.RespondWithJSON(w, http.StatusOK, t)
 }
 
-// GetTree godoc
-// @Summary Get a tree
-// @Description Get a tree by ID
-// @Tags Trees
-// @Accept json
-// @Produce json
-// @Param tree_id path string true "Tree ID"
-// @Success 200 {object} domain.Tree
-// @Failure 400 {object} httpserver.Error
-// @Failure 404 {object} httpserver.Error
-// @Failure 500 {object} httpserver.Error
-// @Router /trees/{tree_id} [get]
+// swagger:route GET /trees/{tree_id} Trees getTree
+//
+// Get a tree
+//
+// Get a tree by ID
+//
+// responses:
+//   200: Tree
+//   400: Error
+//   404: Error
+//   500: Error
 func (ctrl TreeController) GetTree(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID, err := uuid.Parse(params["id"])
@@ -69,18 +68,17 @@ func (ctrl TreeController) GetTree(w http.ResponseWriter, r *http.Request) {
 	httpserver.RespondWithJSON(w, http.StatusOK, t)
 }
 
-// NewTree godoc
-// @Summary Create a new tree
-// @Description Create by json tree
-// @Tags Trees
-// @Accept json
-// @Produce json
-// @Param tree body domain.Tree true "Create a new tree"
-// @Success 201 {object} domain.Tree
-// @Failure 400 {object} httpserver.Error
-// @Failure 404 {object} httpserver.Error
-// @Failure 500 {object} httpserver.Error
-// @Router /trees [post]
+// swagger:route POST /trees Trees newTree
+//
+// Create a new tree
+//
+// Create by json tree
+//
+// responses:
+//   201: Tree
+//   400: Error
+//   404: Error
+//   500: Error
 func (ctrl TreeController) NewTree(w http.ResponseWriter, r *http.Request) {
 	var t domain.Tree
 
@@ -97,19 +95,17 @@ func (ctrl TreeController) NewTree(w http.ResponseWriter, r *http.Request) {
 	httpserver.RespondWithJSON(w, http.StatusCreated, t)
 }
 
-// UpdateTree godoc
-// @Summary Update a tree
-// @Description Update by json tree
-// @Tags Trees
-// @Accept json
-// @Produce json
-// @Param tree_id path string true "Tree ID"
-// @Param tree body domain.Tree true "Update tree"
-// @Success 200 {object} domain.Tree
-// @Failure 400 {object} httpserver.Error
-// @Failure 404 {object} httpserver.Error
-// @Failure 500 {object} httpserver.Error
-// @Router /trees/{tree_id} [put]
+// swagger:route PUT /trees/{tree_id} Trees updateTree
+//
+// Update a tree
+//
+// Update by json tree
+//
+// responses:
+//   200: Tree
+//   400: Error
+//   404: Error
+//   500: Error
 func (ctrl TreeController) UpdateTree(w http.ResponseWriter, r *http.Request) {
 	var t domain.Tree
 
@@ -134,18 +130,17 @@ func (ctrl TreeController) UpdateTree(w http.ResponseWriter, r *http.Request) {
 	httpserver.RespondWithJSON(w, http.StatusOK, t)
 }
 
-// DeleteTree godoc
-// @Summary Delete a tree
-// @Description Delete by tree ID
-// @Tags Trees
-// @Accept json
-// @Produce json
-// @Param tree_id path string true "Tree ID"
-// @Success 204
-// @Failure 400 {object} httpserver.Error
-// @Failure 404 {object} httpserver.Error
-// @Failure 500 {object} httpserver.Error
-// @Router /trees/{tree_id} [delete]
+// swagger:route DELETE /trees/{tree_id} Trees deleteTree
+//
+// Delete a tree
+//
+// Delete by tree ID
+//
+// responses:
+//   204:
+//   400: Error
+//   404: Error
+//   500: Error
 func (ctrl TreeController) DeleteTree(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID, err := uuid.Parse(params["id"])

@@ -1,422 +1,460 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "description": "Some description",
-        "title": "Go Family Tree API",
-        "termsOfService": "http://swagger.io/terms/ap",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
-        "version": "1.0"
-    },
-    "basePath": "/api",
-    "paths": {
-        "/trees": {
-            "get": {
-                "description": "List all trees",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Trees"
-                ],
-                "summary": "List all trees",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/domain.Tree"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create by json tree",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Trees"
-                ],
-                "summary": "Create a new tree",
-                "parameters": [
-                    {
-                        "description": "Create a new tree",
-                        "name": "tree",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.Tree"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/domain.Tree"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    }
-                }
+  "swagger": "2.0",
+  "info": {},
+  "paths": {
+    "/trees": {
+      "get": {
+        "description": "List all trees",
+        "tags": [
+          "Trees"
+        ],
+        "summary": "List all trees",
+        "operationId": "getAllTrees",
+        "responses": {
+          "200": {
+            "description": "Tree",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Tree"
+              }
             }
-        },
-        "/trees/{tree_id}": {
-            "get": {
-                "description": "Get a tree by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Trees"
-                ],
-                "summary": "Get a tree",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Tree ID",
-                        "name": "tree_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/domain.Tree"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Update by json tree",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Trees"
-                ],
-                "summary": "Update a tree",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Tree ID",
-                        "name": "tree_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update tree",
-                        "name": "tree",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.Tree"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/domain.Tree"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete by tree ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Trees"
-                ],
-                "summary": "Delete a tree",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Tree ID",
-                        "name": "tree_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": ""
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    }
-                }
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
-        },
-        "/users": {
-            "get": {
-                "description": "List all users",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "summary": "List all users",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/domain.User"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    }
-                }
+          },
+          "404": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
-        },
-        "/users/{user_id}": {
-            "get": {
-                "description": "Get a user by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Get a user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/domain.User"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.Error"
-                        }
-                    }
-                }
+          },
+          "500": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
+          }
         }
-    },
-    "definitions": {
-        "domain.Tree": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
+      },
+      "post": {
+        "description": "Create by json tree",
+        "tags": [
+          "Trees"
+        ],
+        "summary": "Create a new tree",
+        "operationId": "newTree",
+        "parameters": [
+          {
+            "x-go-name": "Tree",
+            "name": "tree",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Tree"
             }
-        },
-        "domain.User": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "lang": {
-                    "type": "string"
-                },
-                "login": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password_hash": {
-                    "type": "string"
-                },
-                "role": {
-                    "type": "string"
-                }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Tree",
+            "schema": {
+              "$ref": "#/definitions/Tree"
             }
-        },
-        "httpserver.Error": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 400
-                },
-                "message": {
-                    "type": "string",
-                    "example": "status bad request"
-                }
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
+          },
+          "404": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
         }
+      }
+    },
+    "/trees/{tree_id}": {
+      "get": {
+        "description": "Get a tree by ID",
+        "tags": [
+          "Trees"
+        ],
+        "summary": "Get a tree",
+        "operationId": "getTree",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "x-go-name": "TreeID",
+            "name": "tree_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tree",
+            "schema": {
+              "$ref": "#/definitions/Tree"
+            }
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Update by json tree",
+        "tags": [
+          "Trees"
+        ],
+        "summary": "Update a tree",
+        "operationId": "updateTree",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "x-go-name": "TreeID",
+            "name": "tree_id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "x-go-name": "Tree",
+            "name": "tree",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Tree"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tree",
+            "schema": {
+              "$ref": "#/definitions/Tree"
+            }
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete by tree ID",
+        "tags": [
+          "Trees"
+        ],
+        "summary": "Delete a tree",
+        "operationId": "deleteTree",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "x-go-name": "TreeID",
+            "name": "tree_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "List all users",
+        "tags": [
+          "Users"
+        ],
+        "summary": "List all users",
+        "operationId": "getAllUsers",
+        "responses": {
+          "200": {
+            "description": "User",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "description": "Get a user by ID",
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get a user",
+        "operationId": "getUser",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "x-go-name": "UserID",
+            "name": "user_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
+  },
+  "definitions": {
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Code"
+        },
+        "message": {
+          "type": "string",
+          "x-go-name": "Message"
+        }
+      },
+      "x-go-package": "github.com/joffrua/go-famtree/internal/infra/httpserver"
+    },
+    "Person": {
+      "type": "object",
+      "properties": {
+        "bio": {
+          "type": "string",
+          "x-go-name": "Bio"
+        },
+        "birth_date": {
+          "type": "string",
+          "x-go-name": "BirthDate"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "CreatedAt"
+        },
+        "death_date": {
+          "type": "string",
+          "x-go-name": "DeathDate"
+        },
+        "father_id": {
+          "type": "string",
+          "format": "uuid",
+          "x-go-name": "FatherID"
+        },
+        "first_name": {
+          "type": "string",
+          "x-go-name": "FirstName"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "x-go-name": "ID"
+        },
+        "last_name": {
+          "type": "string",
+          "x-go-name": "LastName"
+        },
+        "maiden_name": {
+          "type": "string",
+          "x-go-name": "MaidenName"
+        },
+        "mother_id": {
+          "type": "string",
+          "format": "uuid",
+          "x-go-name": "MotherID"
+        },
+        "patronymic": {
+          "type": "string",
+          "x-go-name": "Patronymic"
+        },
+        "tree_id": {
+          "type": "string",
+          "format": "uuid",
+          "x-go-name": "TreeID"
+        }
+      },
+      "x-go-package": "github.com/joffrua/go-famtree/internal/domain"
+    },
+    "Tree": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "CreatedAt"
+        },
+        "description": {
+          "type": "string",
+          "x-go-name": "Description"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "x-go-name": "ID"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        }
+      },
+      "x-go-package": "github.com/joffrua/go-famtree/internal/domain"
+    },
+    "UUID": {
+      "description": "A UUID is a 128 bit (16 byte) Universal Unique IDentifier as defined in RFC\n4122.",
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "format": "uint8"
+      },
+      "x-go-package": "github.com/google/uuid"
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "CreatedAt"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "x-go-name": "Email"
+        },
+        "id": {
+          "$ref": "#/definitions/UUID",
+          "format": "uuid"
+        },
+        "lang": {
+          "type": "string",
+          "x-go-name": "Lang"
+        },
+        "login": {
+          "type": "string",
+          "x-go-name": "Login"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "role": {
+          "type": "string",
+          "x-go-name": "Role"
+        }
+      },
+      "x-go-package": "github.com/joffrua/go-famtree/internal/domain"
+    }
+  }
 }

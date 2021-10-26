@@ -6,8 +6,9 @@ import (
 	"github.com/google/uuid"
 )
 
-// Tree example
+// swagger:model
 type Tree struct {
+	// swagger:strfmt uuid
 	ID          uuid.UUID `json:"id"`
 	CreatedAt   time.Time `json:"created_at"`
 	Name        string    `json:"name"`

@@ -38,5 +38,6 @@ go run .
 To generate Swagger documentation:
 
 ```
-swag init -g cmd/go-famtree/main.go
+swagger generate spec -o ./docs/swagger.yaml --scan-models
 ```
+

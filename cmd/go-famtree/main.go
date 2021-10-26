@@ -17,19 +17,21 @@ import (
 	"github.com/joffrua/go-famtree/internal/infra/httpserver"
 )
 
-// @title Go Family Tree API
-// @version 1.0
-// @description Some description
-// @termsOfService http://swagger.io/terms/ap
-
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @BasePath /api
+// Go Family Tree API
+//
+// Some description
+//
+//     Schemes: http
+//     BasePath: /api
+//     Version: 1.0.0
+//
+//     Consumes:
+//     - application/json
+//
+//     Produces:
+//     - application/json
+//
+// swagger:meta
 func main() {
 	log.SetOutput(os.Stdout)
 
@@ -56,7 +58,6 @@ func main() {
 	s.AddRoute(http.MethodPut, "/api/trees/{id}", treeCtrl.UpdateTree)
 	s.AddRoute(http.MethodDelete, "/api/trees/{id}", treeCtrl.DeleteTree)
 
-	s.AddSwagger("/swagger/")
 	s.AddStaticDir("/", "./build")
 
 	s.Start()
