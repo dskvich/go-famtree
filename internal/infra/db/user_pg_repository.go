@@ -16,13 +16,13 @@ func NewUserPgRepository(pg *Pg) *UserPgRepository {
 }
 
 func (repo UserPgRepository) FindAll() ([]domain.User, error) {
-	var u []domain.User
+	u := []domain.User{}
 	err := repo.pg.GetConnection().Model(&u).Select()
 	return u, err
 }
 
 func (repo UserPgRepository) FindByID(id uuid.UUID) (*domain.User, error) {
-	var u domain.User
+	u := domain.User{}
 	err := repo.pg.GetConnection().Model(&u).Where("id = ?", id).Select()
 	return &u, err
 }
