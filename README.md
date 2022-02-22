@@ -32,11 +32,5 @@ npm run watch
 To start the server:
 
 ```
-go run .
-```
-
-To generate Swagger documentation:
-
-```
-swag init -g cmd/go-famtree/main.go
+go run .\cmd\go-famtree\main.go
 ```

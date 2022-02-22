@@ -17,19 +17,6 @@ import (
 	"github.com/joffrua/go-famtree/internal/infra/httpserver"
 )
 
-// @title Go Family Tree API
-// @version 1.0
-// @description Some description
-// @termsOfService http://swagger.io/terms/ap
-
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @BasePath /api
 func main() {
 	log.SetOutput(os.Stdout)
 
@@ -47,16 +34,18 @@ func main() {
 	treeCtrl := controller.NewTreeController(treeRepo)
 
 	s := httpserver.NewBuilder(cfg)
-	s.AddRoute(http.MethodGet, "/api/users", userCtrl.GetAllUsers)
-	s.AddRoute(http.MethodGet, "/api/users/{id}", userCtrl.GetUser)
+	s.AddRoute(http.MethodPost, "/api/users", userCtrl.New)
+	s.AddRoute(http.MethodGet, "/api/users", userCtrl.GetAll)
+	s.AddRoute(http.MethodGet, "/api/users/{id}", userCtrl.Get)
+	s.AddRoute(http.MethodPut, "/api/users/{id}", userCtrl.Update)
+	s.AddRoute(http.MethodDelete, "/api/users/{id}", userCtrl.Delete)
 
-	s.AddRoute(http.MethodPost, "/api/trees", treeCtrl.NewTree)
-	s.AddRoute(http.MethodGet, "/api/trees", treeCtrl.GetAllTrees)
-	s.AddRoute(http.MethodGet, "/api/trees/{id}", treeCtrl.GetTree)
-	s.AddRoute(http.MethodPut, "/api/trees/{id}", treeCtrl.UpdateTree)
-	s.AddRoute(http.MethodDelete, "/api/trees/{id}", treeCtrl.DeleteTree)
+	s.AddRoute(http.MethodPost, "/api/trees", treeCtrl.New)
+	s.AddRoute(http.MethodGet, "/api/trees", treeCtrl.GetAll)
+	s.AddRoute(http.MethodGet, "/api/trees/{id}", treeCtrl.Get)
+	s.AddRoute(http.MethodPut, "/api/trees/{id}", treeCtrl.Update)
+	s.AddRoute(http.MethodDelete, "/api/trees/{id}", treeCtrl.Delete)
 
-	s.AddSwagger("/swagger/")
 	s.AddStaticDir("/", "./build")
 
 	s.Start()

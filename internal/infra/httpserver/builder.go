@@ -15,8 +15,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
-	_ "github.com/joffrua/go-famtree/docs"
-	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type builder struct {
@@ -45,12 +43,6 @@ func (b *builder) AddRoute(method, path string, handlerFunc http.HandlerFunc) {
 
 func (b *builder) AddStaticDir(path, dir string) {
 	b.router.PathPrefix(path).Handler(http.FileServer(http.Dir(dir)))
-}
-
-func (b *builder) AddSwagger(path string) {
-	b.router.PathPrefix(path).Handler(httpSwagger.Handler(
-		httpSwagger.URL("/swagger/doc.json"),
-	))
 }
 
 func (b *builder) Start() {

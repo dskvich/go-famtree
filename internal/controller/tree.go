@@ -22,40 +22,17 @@ func NewTreeController(repo domain.TreeRepository) *TreeController {
 	}
 }
 
-// GetAllTrees godoc
-// @Summary List all trees
-// @Description List all trees
-// @Tags Trees
-// @Accept json
-// @Produce json
-// @Success 200 {array} domain.Tree
-// @Failure 400 {object} httpserver.Error
-// @Failure 404 {object} httpserver.Error
-// @Failure 500 {object} httpserver.Error
-// @Router /trees [get]
-func (ctrl TreeController) GetAllTrees(w http.ResponseWriter, _ *http.Request) {
-	t, err := ctrl.repo.FindAll()
+func (c TreeController) GetAll(w http.ResponseWriter, _ *http.Request) {
+	tree, err := c.repo.FindAll()
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	httpserver.RespondWithJSON(w, http.StatusOK, t)
+	httpserver.RespondWithJSON(w, http.StatusOK, tree)
 }
 
-// GetTree godoc
-// @Summary Get a tree
-// @Description Get a tree by ID
-// @Tags Trees
-// @Accept json
-// @Produce json
-// @Param tree_id path string true "Tree ID"
-// @Success 200 {object} domain.Tree
-// @Failure 400 {object} httpserver.Error
-// @Failure 404 {object} httpserver.Error
-// @Failure 500 {object} httpserver.Error
-// @Router /trees/{tree_id} [get]
-func (ctrl TreeController) GetTree(w http.ResponseWriter, r *http.Request) {
+func (c TreeController) Get(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID, err := uuid.Parse(params["id"])
 	if err != nil {
@@ -63,63 +40,35 @@ func (ctrl TreeController) GetTree(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t, err := ctrl.repo.FindByID(ID)
+	tree, err := c.repo.FindByID(ID)
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	httpserver.RespondWithJSON(w, http.StatusOK, t)
+	httpserver.RespondWithJSON(w, http.StatusOK, tree)
 }
 
-// NewTree godoc
-// @Summary Create a new tree
-// @Description Create by json tree
-// @Tags Trees
-// @Accept json
-// @Produce json
-// @Param tree body domain.Tree true "Create a new tree"
-// @Success 201 {object} domain.Tree
-// @Failure 400 {object} httpserver.Error
-// @Failure 404 {object} httpserver.Error
-// @Failure 500 {object} httpserver.Error
-// @Router /trees [post]
-func (ctrl TreeController) NewTree(w http.ResponseWriter, r *http.Request) {
-	var t domain.Tree
+func (c TreeController) New(w http.ResponseWriter, r *http.Request) {
+	var tree *domain.Tree
 
-	err := httpserver.DecodeJSONBody(w, r, &t)
-	if err != nil {
+	if err := httpserver.DecodeJSONBody(w, r, tree); err != nil {
 		httpserver.RespondWithError(w, http.StatusBadRequest, err)
 		return
 	}
 
-	err = ctrl.repo.Persist(&t)
-	if err != nil {
+	if err := c.repo.Persist(tree); err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	httpserver.RespondWithJSON(w, http.StatusCreated, t)
+	httpserver.RespondWithJSON(w, http.StatusCreated, tree)
 }
 
-// UpdateTree godoc
-// @Summary Update a tree
-// @Description Update by json tree
-// @Tags Trees
-// @Accept json
-// @Produce json
-// @Param tree_id path string true "Tree ID"
-// @Param tree body domain.Tree true "Update tree"
-// @Success 200 {object} domain.Tree
-// @Failure 400 {object} httpserver.Error
-// @Failure 404 {object} httpserver.Error
-// @Failure 500 {object} httpserver.Error
-// @Router /trees/{tree_id} [put]
-func (ctrl TreeController) UpdateTree(w http.ResponseWriter, r *http.Request) {
-	var t domain.Tree
+func (c TreeController) Update(w http.ResponseWriter, r *http.Request) {
+	var tree *domain.Tree
 
-	err := httpserver.DecodeJSONBody(w, r, &t)
-	if err != nil {
+	if err := httpserver.DecodeJSONBody(w, r, tree); err != nil {
 		httpserver.RespondWithError(w, http.StatusBadRequest, err)
 		return
 	}
@@ -131,30 +80,18 @@ func (ctrl TreeController) UpdateTree(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t.ID = ID
+	tree.ID = ID
 
-	err = ctrl.repo.Persist(&t)
+	err = c.repo.Persist(tree)
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	httpserver.RespondWithJSON(w, http.StatusOK, t)
+	httpserver.RespondWithJSON(w, http.StatusOK, tree)
 }
 
-// DeleteTree godoc
-// @Summary Delete a tree
-// @Description Delete by tree ID
-// @Tags Trees
-// @Accept json
-// @Produce json
-// @Param tree_id path string true "Tree ID"
-// @Success 204
-// @Failure 400 {object} httpserver.Error
-// @Failure 404 {object} httpserver.Error
-// @Failure 500 {object} httpserver.Error
-// @Router /trees/{tree_id} [delete]
-func (ctrl TreeController) DeleteTree(w http.ResponseWriter, r *http.Request) {
+func (c TreeController) Delete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID, err := uuid.Parse(params["id"])
 	if err != nil {
@@ -162,7 +99,7 @@ func (ctrl TreeController) DeleteTree(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = ctrl.repo.Delete(ID); err != nil {
+	if err = c.repo.Delete(ID); err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
