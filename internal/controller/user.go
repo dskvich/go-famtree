@@ -23,13 +23,12 @@ func NewUserController(repo domain.UserRepository) *UserController {
 
 func (c UserController) New(w http.ResponseWriter, r *http.Request) {
 	var user domain.User
-
 	if err := httpserver.DecodeJSONBody(w, r, &user); err != nil {
 		httpserver.RespondWithError(w, http.StatusBadRequest, err)
 		return
 	}
 
-	log.Infof("create user: %+v", user)
+	log.Infof("creating user: %+v", user)
 
 	if err := c.repo.Persist(&user); err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
@@ -83,13 +82,6 @@ func (c UserController) Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c UserController) Update(w http.ResponseWriter, r *http.Request) {
-	var user domain.User
-
-	if err := httpserver.DecodeJSONBody(w, r, &user); err != nil {
-		httpserver.RespondWithError(w, http.StatusBadRequest, err)
-		return
-	}
-
 	params := mux.Vars(r)
 	ID, err := uuid.Parse(params["id"])
 	if err != nil {
@@ -97,10 +89,17 @@ func (c UserController) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var user domain.User
+	if err := httpserver.DecodeJSONBody(w, r, &user); err != nil {
+		httpserver.RespondWithError(w, http.StatusBadRequest, err)
+		return
+	}
+
 	user.ID = ID
 
-	err = c.repo.Persist(&user)
-	if err != nil {
+	log.Infof("updating user: %+v", user)
+
+	if err := c.repo.Persist(&user); err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
