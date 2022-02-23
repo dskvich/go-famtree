@@ -27,6 +27,7 @@ func main() {
 	log.Infof("config loaded: %+v", cfg)
 
 	pg := db.NewPg(cfg)
+	defer pg.Disconnect()
 	userRepo := db.NewUserPgRepository(pg)
 	treeRepo := db.NewTreePgRepository(pg)
 

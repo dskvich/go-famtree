@@ -1,6 +1,8 @@
 package db
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 	"github.com/joffrua/go-famtree/internal/domain"
 )
@@ -15,24 +17,22 @@ func NewTreePgRepository(pg *Pg) *TreePgRepository {
 	}
 }
 
-func (repo TreePgRepository) FindAll() ([]domain.Tree, error) {
-	t := []domain.Tree{}
-	err := repo.pg.GetConnection().Model(&t).Select()
-	return t, err
+func (repo TreePgRepository) FindAll() (t []domain.Tree, err error) {
+	err = repo.pg.GetConnection().NewSelect().Model(&t).Scan(context.Background())
+	return
 }
 
-func (repo TreePgRepository) FindByID(id uuid.UUID) (*domain.Tree, error) {
-	t := domain.Tree{}
-	err := repo.pg.GetConnection().Model(&t).Where("id = ?", id).Select()
-	return &t, err
+func (repo TreePgRepository) FindByID(id uuid.UUID) (t *domain.Tree, err error) {
+	err = repo.pg.GetConnection().NewSelect().Model(&t).Where("id = ?", id).Scan(context.Background())
+	return
 }
 
 func (repo TreePgRepository) Persist(t *domain.Tree) error {
-	_, err := repo.pg.GetConnection().Model(t).OnConflict("(id) DO UPDATE").Insert()
+	_, err := repo.pg.GetConnection().NewInsert().Model(t).On("CONFLICT (id) DO UPDATE").Exec(context.Background())
 	return err
 }
 
 func (repo TreePgRepository) Delete(id uuid.UUID) error {
-	_, err := repo.pg.GetConnection().Model((*domain.Tree)(nil)).Where("id = ?", id).Delete()
+	_, err := repo.pg.GetConnection().NewDelete().Model((*domain.Tree)(nil)).Where("id = ?", id).Exec(context.Background())
 	return err
 }

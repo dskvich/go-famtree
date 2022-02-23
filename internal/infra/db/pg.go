@@ -1,8 +1,7 @@
 package db
 
 import (
-	"context"
-	"errors"
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -10,121 +9,90 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/go-pg/pg/v10"
-	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/driver/pgdriver"
+	"github.com/uptrace/bun/extra/bundebug"
 )
 
 type Pg struct {
-	cfg  *config.Config
-	url  string
-	opts *pg.Options
-	conn *pg.DB
+	cfg   *config.Config
+	url   string
+	sqldb *sql.DB
+	db    *bun.DB
 }
 
 const dbName = "app"
 
 func NewPg(cfg *config.Config) *Pg {
-	db := new(Pg)
-	db.cfg = cfg
+	pg := new(Pg)
+	pg.cfg = cfg
 
-	if err := db.configure(); err != nil {
+	if err := pg.configure(); err != nil {
 		log.Panicf("Configuration failed: %+v", err)
 	}
 
-	if err := db.migrate(); err != nil {
+	if err := pg.migrate(); err != nil {
 		log.Panicf("Migration failed: %+v", err)
 	}
 
-	return db
+	return pg
 }
 
-func (db *Pg) configure() error {
-	db.url = db.cfg.PG.URL
-	if db.url == "" {
-		host := db.cfg.PG.Host
+func (pg *Pg) configure() error {
+	pg.url = pg.cfg.PG.URL
+	if pg.url == "" {
+		host := pg.cfg.PG.Host
 		if host == "" {
 			host = "localhost:65432"
 		}
-		db.url = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", dbName, dbName, host, dbName)
+		pg.url = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", dbName, dbName, host, dbName)
 	}
-	log.Infof("pg connection string: %s", db.url)
+	log.Infof("pg connection string: %s", pg.url)
 
-	var err error
-	db.opts, err = pg.ParseURL(db.url)
-	if err != nil {
-		return err
-	}
+	pg.sqldb = sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(pg.url)))
+	pg.sqldb.SetMaxOpenConns(25)
+	pg.sqldb.SetMaxIdleConns(25)
+	pg.sqldb.SetConnMaxLifetime(5 * time.Minute)
 
-	db.opts.MaxRetries = 1
-	db.opts.MinRetryBackoff = -1
+	pg.db = bun.NewDB(pg.sqldb, pgdialect.New())
 
-	db.opts.DialTimeout = 30 * time.Second
-	db.opts.ReadTimeout = 10 * time.Second
-	db.opts.WriteTimeout = 10 * time.Second
-
-	db.opts.PoolSize = 10
-	db.opts.MaxConnAge = 10 * time.Second
-	db.opts.PoolTimeout = 30 * time.Second
-	db.opts.IdleTimeout = 10 * time.Second
-	db.opts.IdleCheckFrequency = 100 * time.Millisecond
-
-	db.conn = pg.Connect(db.opts)
-
-	if db.cfg.PG.ShowSQL {
-		db.conn.AddQueryHook(pgLogger{})
+	if pg.cfg.PG.ShowSQL {
+		pg.db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 	}
 
 	return nil
 }
 
 func (db *Pg) migrate() error {
-	m, err := migrate.New("file://internal/infra/db/migrations", db.url)
-	if err != nil {
-		return err
-	}
-
-	err = m.Up()
-	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		return err
-	}
+	//TODO
 
 	return nil
 }
 
-type pgLogger struct{}
-
-func (l pgLogger) BeforeQuery(ctx context.Context, _ *pg.QueryEvent) (context.Context, error) {
-	return ctx, nil
+func (db *Pg) GetConnection() *bun.DB {
+	return db.db
 }
 
-func (l pgLogger) AfterQuery(_ context.Context, q *pg.QueryEvent) error {
-	b, _ := q.FormattedQuery()
-	fmt.Println(string(b))
-	return nil
-}
-
-func (db *Pg) GetConnection() *pg.DB {
-	return db.conn
-}
-
-func (db *Pg) IsConnected() (bool, error) {
-	if db.conn == nil {
-		return false, fmt.Errorf("connection is not defined")
+func (pg *Pg) Disconnect() {
+	if pg.db == nil {
+		log.Error("Unable to disconnect: bun.DB is not defined")
 	}
 
-	if _, err := db.conn.Exec("SELECT 1"); err != nil {
-		return false, err
+	if pg.sqldb == nil {
+		log.Error("Unable to disconnect: sql.DB is not defined")
 	}
-	return true, nil
-}
 
-func (db *Pg) Disconnect() {
-	if db.conn == nil {
-		log.Error("Unable to disconnect: connection is not defined")
+	if err := pg.db.Close(); err != nil {
+		log.Errorf("Failed to close bun.DB: %+v", err)
 	}
-	if err := db.conn.Close(); err != nil {
-		log.Errorf("Failed to close connection: %+v", err)
+	log.Info("bun.DB closed")
+
+	if err := pg.sqldb.Close(); err != nil {
+		log.Errorf("Failed to close sql.DB: %+v", err)
 	}
+	log.Info("sql.DB closed")
 }
