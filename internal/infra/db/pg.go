@@ -2,20 +2,25 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"io/fs"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/joffrua/go-famtree/config"
 
 	log "github.com/sirupsen/logrus"
 
-	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
-
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
 	"github.com/uptrace/bun/extra/bundebug"
+
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 type Pg struct {
@@ -67,14 +72,36 @@ func (pg *Pg) configure() error {
 	return nil
 }
 
-func (db *Pg) migrate() error {
-	//TODO
+func (pg *Pg) migrate() error {
+	folder := ""
+	err := filepath.WalkDir(".", func(path string, d fs.DirEntry, err error) error {
+		if d.IsDir() && d.Name() == "migrations" {
+			path = strings.ReplaceAll(path, "\\", "/")
+			folder = path
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	log.Infof("migrations folder is: %+v", folder)
+
+	m, err := migrate.New(fmt.Sprintf("file://%s", folder), pg.url)
+	if err != nil {
+		return err
+	}
+
+	err = m.Up()
+	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		return err
+	}
 
 	return nil
 }
 
-func (db *Pg) GetConnection() *bun.DB {
-	return db.db
+func (pg *Pg) GetConnection() *bun.DB {
+	return pg.db
 }
 
 func (pg *Pg) Disconnect() {
@@ -89,10 +116,8 @@ func (pg *Pg) Disconnect() {
 	if err := pg.db.Close(); err != nil {
 		log.Errorf("Failed to close bun.DB: %+v", err)
 	}
-	log.Info("bun.DB closed")
 
 	if err := pg.sqldb.Close(); err != nil {
 		log.Errorf("Failed to close sql.DB: %+v", err)
 	}
-	log.Info("sql.DB closed")
 }

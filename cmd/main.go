@@ -28,8 +28,9 @@ func main() {
 
 	pg := db.NewPg(cfg)
 	defer pg.Disconnect()
-	userRepo := db.NewUserPgRepository(pg)
-	treeRepo := db.NewTreePgRepository(pg)
+
+	userRepo := db.NewUserBunRepository(pg)
+	treeRepo := db.NewTreeBunRepository(pg)
 
 	userCtrl := controller.NewUserController(userRepo)
 	treeCtrl := controller.NewTreeController(treeRepo)

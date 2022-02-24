@@ -32,5 +32,5 @@ npm run watch
 To start the server:
 
 ```
-go run .\cmd\go-famtree\main.go
+go run .\cmd\main.go
 ```
