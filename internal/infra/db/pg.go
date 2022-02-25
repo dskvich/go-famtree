@@ -11,7 +11,7 @@ import (
 
 	"github.com/joffrua/go-famtree/config"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -24,7 +24,7 @@ import (
 )
 
 type Pg struct {
-	cfg   *config.Config
+	cfg   *config.PG
 	url   string
 	sqldb *sql.DB
 	db    *bun.DB
@@ -32,27 +32,27 @@ type Pg struct {
 
 const dbName = "app"
 
-func NewPg(cfg *config.Config) *Pg {
+func NewPg(cfg *config.PG) (*Pg, error) {
 	pg := new(Pg)
 	pg.cfg = cfg
 
 	if err := pg.configure(); err != nil {
-		log.Panicf("Configuration failed: %+v", err)
+		return nil, fmt.Errorf("Configuration failed: %w", err)
 	}
 
 	if err := pg.migrate(); err != nil {
-		log.Panicf("Migration failed: %+v", err)
+		return nil, fmt.Errorf("Migration failed: %+v", err)
 	}
 
-	return pg
+	return pg, nil
 }
 
 func (pg *Pg) configure() error {
-	pg.url = pg.cfg.PG.URL
+	pg.url = pg.cfg.URL
 	if pg.url == "" {
-		pg.url = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", dbName, dbName, pg.cfg.PG.Host, dbName)
+		pg.url = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", dbName, dbName, pg.cfg.Host, dbName)
 	}
-	log.Infof("pg connection string: %s", pg.url)
+	log.Info().Msgf("PG connection string: %s", pg.url)
 
 	pg.sqldb = sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(pg.url)))
 	pg.sqldb.SetMaxOpenConns(25)
@@ -61,7 +61,7 @@ func (pg *Pg) configure() error {
 
 	pg.db = bun.NewDB(pg.sqldb, pgdialect.New())
 
-	if pg.cfg.PG.ShowSQL {
+	if pg.cfg.ShowSQL {
 		pg.db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 	}
 
@@ -81,7 +81,7 @@ func (pg *Pg) migrate() error {
 		return err
 	}
 
-	log.Infof("migrations folder is: %+v", folder)
+	log.Info().Msgf("Migrations folder is: %+v", folder)
 
 	m, err := migrate.New(fmt.Sprintf("file://%s", folder), pg.url)
 	if err != nil {
@@ -102,18 +102,18 @@ func (pg *Pg) GetConnection() *bun.DB {
 
 func (pg *Pg) Disconnect() {
 	if pg.db == nil {
-		log.Error("Unable to disconnect: bun.DB is not defined")
+		log.Error().Msg("Unable to disconnect: bun.DB is not defined")
 	}
 
 	if pg.sqldb == nil {
-		log.Error("Unable to disconnect: sql.DB is not defined")
+		log.Error().Msg("Unable to disconnect: sql.DB is not defined")
 	}
 
 	if err := pg.db.Close(); err != nil {
-		log.Errorf("Failed to close bun.DB: %+v", err)
+		log.Error().Err(err).Msg("Failed to close bun.DB")
 	}
 
 	if err := pg.sqldb.Close(); err != nil {
-		log.Errorf("Failed to close sql.DB: %+v", err)
+		log.Error().Err(err).Msg("Failed to close sql.DB")
 	}
 }

@@ -2,13 +2,8 @@ package config
 
 type (
 	Config struct {
-		Log
 		HTTP
 		PG
-	}
-
-	Log struct {
-		Level string `envconfig:"LOG_LEVEL" default:"info"`
 	}
 
 	HTTP struct {

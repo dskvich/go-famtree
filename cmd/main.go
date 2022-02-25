@@ -3,30 +3,33 @@ package main
 import (
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/kelseyhightower/envconfig"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 
 	"github.com/joffrua/go-famtree/config"
-
-	log "github.com/sirupsen/logrus"
-
-	"github.com/joffrua/go-famtree/internal/infra/db"
-
 	"github.com/joffrua/go-famtree/internal/controller"
-
+	"github.com/joffrua/go-famtree/internal/infra/db"
 	"github.com/joffrua/go-famtree/internal/infra/httpserver"
 )
 
 func main() {
-	log.SetOutput(os.Stdout)
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339})
 
 	cfg := new(config.Config)
 	if err := envconfig.Process("", cfg); err != nil {
-		log.Panicf("config initialization failed: %+v", err)
+		log.Error().Err(err).Msg("Config initialization failed")
+		os.Exit(1)
 	}
-	log.Infof("config loaded: %+v", cfg)
+	log.Info().Msgf("Config loaded: %+v", cfg)
 
-	pg := db.NewPg(cfg)
+	pg, err := db.NewPg(&cfg.PG)
+	if err != nil {
+		log.Error().Err(err).Msg("PG connection error")
+		os.Exit(1)
+	}
 	defer pg.Disconnect()
 
 	userRepo := db.NewUserBunRepository(pg)
@@ -35,7 +38,7 @@ func main() {
 	userCtrl := controller.NewUserController(userRepo)
 	treeCtrl := controller.NewTreeController(treeRepo)
 
-	s := httpserver.NewBuilder(cfg)
+	s := httpserver.NewBuilder(&cfg.HTTP)
 	s.AddRoute(http.MethodPost, "/api/users", userCtrl.New)
 	s.AddRoute(http.MethodGet, "/api/users", userCtrl.GetAll)
 	s.AddRoute(http.MethodGet, "/api/users/{id}", userCtrl.Get)

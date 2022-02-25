@@ -17,8 +17,8 @@ func NewUserBunRepository(pg *Pg) *UserBunRepository {
 	}
 }
 
-func (repo UserBunRepository) FindAll() (u []domain.User, err error) {
-	err = repo.pg.GetConnection().NewSelect().Model(&u).Scan(context.Background())
+func (repo UserBunRepository) FindAll(ctx context.Context) (u []domain.User, err error) {
+	err = repo.pg.GetConnection().NewSelect().Model(&u).Scan(ctx)
 	return
 }
 

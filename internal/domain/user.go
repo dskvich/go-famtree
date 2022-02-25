@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -8,7 +9,7 @@ import (
 
 // User example
 type User struct {
-	ID           uuid.UUID `json:"id" format:"uuid"`
+	ID           uuid.UUID `json:"id" format:"uuid" bun:",pk"`
 	CreatedAt    time.Time `json:"created_at" format:"date-time"`
 	Login        string    `json:"login"`
 	Role         string    `json:"role"`
@@ -19,7 +20,7 @@ type User struct {
 }
 
 type UserRepository interface {
-	FindAll() ([]User, error)
+	FindAll(ctx context.Context) ([]User, error)
 	FindByID(uuid.UUID) (*User, error)
 	Persist(*User) error
 	Delete(uuid.UUID) error

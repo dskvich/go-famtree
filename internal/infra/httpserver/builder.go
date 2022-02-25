@@ -10,27 +10,26 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/joffrua/go-famtree/config"
-
-	log "github.com/sirupsen/logrus"
-
 	"github.com/gorilla/mux"
+	"github.com/rs/zerolog/log"
+
+	"github.com/joffrua/go-famtree/config"
 )
 
 type builder struct {
-	cfg    *config.Config
+	cfg    *config.HTTP
 	router *mux.Router
 	server *http.Server
 }
 
-func NewBuilder(cfg *config.Config) *builder {
+func NewBuilder(cfg *config.HTTP) *builder {
 	b := new(builder)
 	b.cfg = cfg
 	b.router = mux.NewRouter().StrictSlash(true)
 	b.router.Use(Logging)
 
 	b.server = &http.Server{
-		Addr:    net.JoinHostPort("", b.cfg.HTTP.Port),
+		Addr:    net.JoinHostPort("", b.cfg.Port),
 		Handler: b.router,
 	}
 
@@ -48,22 +47,22 @@ func (b *builder) AddStaticDir(path, dir string) {
 func (b *builder) Start() {
 	go func() {
 		if err := b.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Errorf("could not listen on port %s: %+v\n", b.cfg.HTTP.Port, err)
+			log.Error().Err(err).Msgf("Could not listen on port %s", b.cfg.Port)
 		}
 	}()
-	log.Infof("http server started on port: %s", b.cfg.HTTP.Port)
+	log.Info().Msgf("HTTP server started on port: %s", b.cfg.Port)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
 	sig := <-c
-	log.Infof("got '%s' signal, http server is shutting down...", sig)
+	log.Info().Msgf("Got '%s' signal, HTTP server is shutting down...", sig)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if err := b.server.Shutdown(ctx); err != nil {
-		log.Panicf("could not gracefully shutdown http server: %+v", err)
+		log.Error().Err(err).Msg("Could not gracefully shutdown http server")
 	}
-	log.Info("http server gracefully stopped")
+	log.Info().Msg("HTTP server gracefully stopped")
 }

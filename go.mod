@@ -7,7 +7,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/sirupsen/logrus v1.8.1
+	github.com/rs/zerolog v1.26.1
 	github.com/uptrace/bun v1.0.24
 	github.com/uptrace/bun/dialect/pgdialect v1.0.24
 	github.com/uptrace/bun/driver/pgdriver v1.0.24

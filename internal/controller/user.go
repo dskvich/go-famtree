@@ -5,7 +5,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/joffrua/go-famtree/internal/domain"
 	"github.com/joffrua/go-famtree/internal/infra/httpserver"
@@ -28,8 +27,6 @@ func (c UserController) New(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Infof("creating user: %+v", user)
-
 	if err := c.repo.Persist(&user); err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
 		return
@@ -38,8 +35,9 @@ func (c UserController) New(w http.ResponseWriter, r *http.Request) {
 	httpserver.RespondWithJSON(w, http.StatusCreated, user)
 }
 
-func (c UserController) GetAll(w http.ResponseWriter, _ *http.Request) {
-	users, err := c.repo.FindAll()
+func (c UserController) GetAll(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	users, err := c.repo.FindAll(ctx)
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
 		return
@@ -96,8 +94,6 @@ func (c UserController) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user.ID = ID
-
-	log.Infof("updating user: %+v", user)
 
 	if err := c.repo.Persist(&user); err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)

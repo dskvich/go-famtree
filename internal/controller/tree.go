@@ -22,7 +22,8 @@ func NewTreeController(repo domain.TreeRepository) *TreeController {
 	}
 }
 
-func (c TreeController) GetAll(w http.ResponseWriter, _ *http.Request) {
+func (c TreeController) GetAll(w http.ResponseWriter, r *http.Request) {
+
 	tree, err := c.repo.FindAll()
 	if err != nil {
 		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
