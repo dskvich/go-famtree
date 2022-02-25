@@ -50,11 +50,7 @@ func NewPg(cfg *config.Config) *Pg {
 func (pg *Pg) configure() error {
 	pg.url = pg.cfg.PG.URL
 	if pg.url == "" {
-		host := pg.cfg.PG.Host
-		if host == "" {
-			host = "localhost:65432"
-		}
-		pg.url = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", dbName, dbName, host, dbName)
+		pg.url = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", dbName, dbName, pg.cfg.PG.Host, dbName)
 	}
 	log.Infof("pg connection string: %s", pg.url)
 
