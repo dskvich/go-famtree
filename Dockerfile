@@ -21,17 +21,15 @@ RUN go build -ldflags="-s -w" -o go-famtree ./cmd/go-famtree
 
 
 # The final image
-FROM alpine
+FROM busybox
 
 WORKDIR /app
 
 COPY --from=ui-build /app/build ./build
 COPY --from=server-build /app/go-famtree ./
-COPY --from=server-build /app/internal/infra/db/migrations ./internal/infra/db/migrations
+COPY --from=server-build /app/internal/repository/migrations ./internal/infra/db/migrations
 
-# Run under non-privileged user with minimal write permissions
-RUN adduser -S -D -H user
-USER user
+
 
 CMD ["./go-famtree"]
 

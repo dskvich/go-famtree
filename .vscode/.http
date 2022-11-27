@@ -1,0 +1,9 @@
+GET http://{{host}}/api/users
+###
+POST http://{{host}}/api/users
+
+{
+	"login": "test",
+	"name": "aaa",
+	"role": "USER"
+}
