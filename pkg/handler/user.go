@@ -5,17 +5,17 @@ import (
 
 	"github.com/go-openapi/strfmt"
 
-	"github.com/joffrua/go-famtree/api/models"
+	"github.com/sushkevichd/go-famtree/api/models"
 
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/joffrua/go-famtree/api/restapi/operations/users"
+	"github.com/sushkevichd/go-famtree/api/restapi/operations/users"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
-	"github.com/joffrua/go-famtree/pkg/domain"
-	"github.com/joffrua/go-famtree/pkg/infra/httpserver"
+	"github.com/sushkevichd/go-famtree/pkg/domain"
+	"github.com/sushkevichd/go-famtree/pkg/infra/httpserver"
 )
 
 type UserHandler struct {

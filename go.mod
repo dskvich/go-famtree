@@ -1,4 +1,4 @@
-module github.com/joffrua/go-famtree
+module github.com/sushkevichd/go-famtree
 
 go 1.20
 

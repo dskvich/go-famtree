@@ -7,24 +7,24 @@ import (
 
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/joffrua/go-famtree/pkg/infra/httpserver"
+	"github.com/sushkevichd/go-famtree/pkg/infra/httpserver"
 
-	"github.com/joffrua/go-famtree/api/restapi/operations/users"
+	"github.com/sushkevichd/go-famtree/api/restapi/operations/users"
 
-	"github.com/joffrua/go-famtree/pkg/handler"
+	"github.com/sushkevichd/go-famtree/pkg/handler"
 
 	"github.com/go-chi/chi"
 	"github.com/go-openapi/loads"
-	"github.com/joffrua/go-famtree/api/restapi"
+	"github.com/sushkevichd/go-famtree/api/restapi"
 
-	"github.com/joffrua/go-famtree/api/restapi/operations"
+	"github.com/sushkevichd/go-famtree/api/restapi/operations"
 
 	"github.com/kelseyhightower/envconfig"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	"github.com/joffrua/go-famtree/config"
-	"github.com/joffrua/go-famtree/pkg/infra/db"
+	"github.com/sushkevichd/go-famtree/config"
+	"github.com/sushkevichd/go-famtree/pkg/infra/db"
 )
 
 func main() {

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/joffrua/go-famtree/config"
+	"github.com/sushkevichd/go-famtree/config"
 
 	"github.com/rs/zerolog/log"
 
