@@ -14,205 +14,255 @@ produces:
 paths:
   /v1/users:
     get:
-      summary: List all users
-      operationId: listUsers
+      summary: Get all users
+      operationId: getUsers
       tags:
-        - users
+        - Users
       responses:
         "200":
-          description: Success
+          description: OK
           schema:
-            $ref: '#/definitions/Users'
+            type: array
+            items:
+              $ref: '#/definitions/User'
         default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/Error'
     post:
-      summary: Create a user
+      summary: Create a new user
       operationId: createUser
       tags:
-        - users
-      responses:
-        "201":
-          description: Success
-          schema:
-            $ref: '#/definitions/User'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-  /v1/users/{userId}:
-    get:
-      summary: Info for a specific user
-      operationId: getUser
-      tags:
-        - users
+        - Users
       parameters:
-        - name: userId
-          in: path
-          required: true
-          description: The id of the user to retrieve
-          type: string
-          format: uuid
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: '#/definitions/User'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-    put:
-      summary: Update a user
-      operationId: updateUser
-      tags:
-        - users
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          description: The id of the user to update
-          type: string
-          format: uuid
         - in: body
-          name: body
-          description: Updated user object
+          name: user
           required: true
           schema:
             $ref: "#/definitions/User"
       responses:
-        "200":
-          description: Success
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/User'
         default:
-          description: unexpected error
+          $ref: '#/responses/Error'
+
+  /v1/users/{userId}:
+    get:
+      summary: Get a user by ID
+      operationId: getUserById
+      tags:
+        - Users
+      parameters:
+        - $ref: "#/parameters/UserIdParam"
+      responses:
+        "200":
+          description: OK
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/User'
+        default:
+          $ref: '#/responses/Error'
+    put:
+      summary: Update a user by ID
+      operationId: updateUserById
+      tags:
+        - Users
+      parameters:
+        - $ref: "#/parameters/UserIdParam"
+        - in: body
+          name: user
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "204":
+          description: No content
+        default:
+          $ref: '#/responses/Error'
     delete:
       tags:
-        - users
-      summary: Deletes a user
-      operationId: deleteUser
+        - Users
+      summary: Deletes a user by ID
+      operationId: deleteUserById
       parameters:
-        - name: userId
-          in: path
-          required: true
-          description: The id of the user to delete
-          type: string
-          format: uuid
+        - $ref: "#/parameters/UserIdParam"
       responses:
-        "201":
-          description: Null response
+        "204":
+          description: No content
         default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-  /v1/trees:
+          $ref: '#/responses/Error'
+
+  /v1/users/{userId}/trees:
     get:
-      summary: List all trees
-      operationId: listTrees
+      summary: Get all trees for a user
+      operationId: getAllTreesForUser
       tags:
-        - trees
+        - Trees
+      parameters:
+        - $ref: "#/parameters/UserIdParam"
       responses:
         "200":
-          description: Success
+          description: OK
           schema:
-            $ref: '#/definitions/Trees'
+            type: array
+            items:
+              $ref: "#/definitions/Tree"
         default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/Error'
     post:
-      summary: Create a tree
-      operationId: createTree
+      summary: Create a new tree for a user
+      operationId: createTreeForUser
       tags:
-        - trees
-      responses:
-        "201":
-          description: Success
-          schema:
-            $ref: '#/definitions/Tree'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-  /v1/trees/{treeId}:
-    get:
-      summary: Info for a specific tree
-      operationId: getTree
-      tags:
-        - trees
+        - Trees
       parameters:
-        - name: treeId
-          in: path
-          required: true
-          description: The id of the tree to retrieve
-          type: string
-          format: uuid
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: '#/definitions/Tree'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-    put:
-      summary: Update a tree
-      operationId: updateTree
-      tags:
-        - trees
-      parameters:
-        - name: treeId
-          in: path
-          required: true
-          description: The id of the tree to update
-          type: string
-          format: uuid
+        - $ref: "#/parameters/UserIdParam"
         - in: body
-          name: body
-          description: Updated tree object
+          name: tree
           required: true
           schema:
             $ref: "#/definitions/Tree"
       responses:
-        "200":
-          description: Success
+        "201":
+          description: OK
           schema:
             $ref: '#/definitions/Tree'
         default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-    delete:
+          $ref: '#/responses/Error'
+
+  /v1/users/{userId}/trees/{treeId}:
+    get:
+      summary: Get a tree by ID
+      operationId: getTreeById
       tags:
-        - trees
-      summary: Deletes a tree
-      operationId: deleteTree
+        - Trees
       parameters:
-        - name: treeId
-          in: path
+        - $ref: "#/parameters/UserIdParam"
+        - $ref: "#/parameters/TreeIdParam"
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Tree'
+        default:
+          $ref: '#/responses/Error'
+    put:
+      summary: Update a tree by ID
+      operationId: updateTreeById
+      tags:
+        - Trees
+      parameters:
+        - $ref: "#/parameters/UserIdParam"
+        - $ref: "#/parameters/TreeIdParam"
+        - in: body
+          name: tree
           required: true
-          description: The id of the tree to delete
-          type: string
-          format: uuid
+          schema:
+            $ref: "#/definitions/Tree"
+      responses:
+        "204":
+          description: No content
+        default:
+          $ref: '#/responses/Error'
+    delete:
+      summary: Delete a tree by ID
+      operationId: deleteTreeById
+      tags:
+        - Trees
+      parameters:
+        - $ref: "#/parameters/UserIdParam"
+        - $ref: "#/parameters/TreeIdParam"
+      responses:
+        "204":
+          description: No content
+        default:
+          $ref: '#/responses/Error'
+
+  /v1/users/{userId}/trees/{treeId}/people:
+    post:
+      summary: Create a new person in a tree
+      operationId: createPersonForTree
+      tags:
+        - People
+      parameters:
+        - $ref: "#/parameters/UserIdParam"
+        - $ref: "#/parameters/TreeIdParam"
+        - in: body
+          name: person
+          required: true
+          schema:
+            $ref: "#/definitions/Person"
       responses:
         "201":
-          description: Null response
-        default:
-          description: unexpected error
+          description: OK
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Person"
+        default:
+          $ref: "#/responses/Error"
+
+  /v1/users/{userId}/trees/{treeId}/people/{personId}:
+    put:
+      summary: Update a person by ID
+      operationId: updatePersonById
+      tags:
+        - People
+      parameters:
+        - $ref: "#/parameters/UserIdParam"
+        - $ref: "#/parameters/TreeIdParam"
+        - $ref: "#/parameters/PersonIdParam"
+        - in: body
+          name: person
+          required: true
+          schema:
+            $ref: "#/definitions/Person"
+      responses:
+        "204":
+          description: No content
+        default:
+          $ref: "#/responses/Error"
+    delete:
+      summary: Delete a person by ID
+      operationId: deletePersonById
+      tags:
+        - People
+      parameters:
+        - $ref: "#/parameters/UserIdParam"
+        - $ref: "#/parameters/TreeIdParam"
+        - $ref: "#/parameters/PersonIdParam"
+      responses:
+        "204":
+          description: No Content
+        default:
+          $ref: "#/responses/Error"
+
+parameters:
+  UserIdParam:
+    in: path
+    name: userId
+    required: true
+    type: string
+    format: uuid
+
+  TreeIdParam:
+    in: path
+    name: treeId
+    required: true
+    type: string
+    format: uuid
+
+  PersonIdParam:
+    in: path
+    name: personId
+    required: true
+    type: string
+    format: uuid
+
 definitions:
   User:
-    type: "object"
+    type: object
     required:
       - id
       - login
       - name
+      - password
     properties:
       id:
         type: string
@@ -221,39 +271,63 @@ definitions:
         type: string
       name:
         type: string
+      email:
+        type: string
+        format: email
       password:
         type: string
         format: password
-  Users:
-    type: array
-    items:
-      $ref: '#/definitions/User'
-  Tree:
-    type: "object"
+
+  Person:
+    type: object
     required:
       - id
       - name
-      - description
     properties:
       id:
         type: string
         format: uuid
       name:
         type: string
-      description:
+      father_id:
         type: string
-  Trees:
-    type: array
-    items:
-      $ref: '#/definitions/Tree'
-  Error:
-    type: "object"
+        format: uuid
+        description: The ID of the person's father, if known
+      mother_id:
+        type: string
+        format: uuid
+        description: The ID of the person's mother, if known
+      children:
+        type: array
+        items:
+          $ref: "#/definitions/Person"
+
+  Tree:
+    type: object
     required:
-      - code
-      - message
+      - id
+      - name
+      - user_id
     properties:
-      code:
-        type: integer
-        format: int32
-      message:
+      id:
         type: string
+        format: uuid
+      name:
+        type: string
+      user_id:
+        type: string
+        format: uuid
+        description: The ID of the user who owns the tree
+      root_id:
+        type: string
+        format: uuid
+        description: The ID of the root person in the tree, if any
+
+responses:
+  Error:
+    description: An error occurred
+    schema:
+      type: object
+      properties:
+        message:
+          type: string

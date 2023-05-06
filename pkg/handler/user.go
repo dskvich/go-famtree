@@ -3,6 +3,8 @@ package handler
 import (
 	"net/http"
 
+	"github.com/rs/zerolog/log"
+
 	"github.com/go-openapi/strfmt"
 
 	"github.com/sushkevichd/go-famtree/api/models"
@@ -28,44 +30,47 @@ func NewUserHandler(repo domain.UserRepository) *UserHandler {
 	}
 }
 
-func (c UserHandler) New(w http.ResponseWriter, r *http.Request) {
-	var user domain.User
-	if err := httpserver.DecodeJSONBody(w, r, &user); err != nil {
-		httpserver.RespondWithError(w, http.StatusBadRequest, err)
-		return
+func (c UserHandler) CreateUser(param users.CreateUserParams) middleware.Responder {
+	user := mapModelUser(param.User)
+
+	if err := c.repo.Persist(user); err != nil {
+		log.Err(err).Interface("param", param).Msg("user creation")
+		return users.NewCreateUserDefault(500)
 	}
 
-	if err := c.repo.Persist(&user); err != nil {
-		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	httpserver.RespondWithJSON(w, http.StatusCreated, user)
+	return users.NewCreateUserCreated().WithPayload(mapDomainUser(*user))
 }
 
-func (c UserHandler) ListUsers(param users.ListUsersParams) middleware.Responder {
+func (c UserHandler) GetUsers(param users.GetUsersParams) middleware.Responder {
 	ctx := param.HTTPRequest.Context()
+
 	userList, err := c.repo.FindAll(ctx)
 	if err != nil {
-		return users.NewListUsersDefault(500)
+		return users.NewGetUsersDefault(500)
 	}
 
-	return users.NewListUsersOK().WithPayload(toUserModels(userList))
+	res := make([]*models.User, len(userList))
+	for i, u := range userList {
+		res[i] = mapDomainUser(u)
+	}
+
+	return users.NewGetUsersOK().WithPayload(res)
 }
 
-func toUserModels(users []domain.User) models.Users {
-	res := make(models.Users, len(users))
-	for i, u := range users {
-		id := strfmt.UUID(u.ID.String())
-		login := u.Login
-		name := u.Name
-		res[i] = &models.User{
-			ID:    &id,
-			Login: &login,
-			Name:  &name,
-		}
+func mapDomainUser(u domain.User) *models.User {
+	id := strfmt.UUID(u.ID.String())
+	return &models.User{
+		ID:    &id,
+		Login: &u.Login,
+		Name:  &u.Name,
 	}
-	return res
+}
+
+func mapModelUser(u *models.User) *domain.User {
+	return &domain.User{
+		Login: *u.Login,
+		Name:  *u.Name,
+	}
 }
 
 func (c UserHandler) Get(w http.ResponseWriter, r *http.Request) {
