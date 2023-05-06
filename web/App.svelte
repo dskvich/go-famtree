@@ -71,12 +71,16 @@
                 body: JSON.stringify(user)
             };
 
+            console.log(options)
+
             const path = id ? `/api/v1/users/${id}` : '/api/v1/users';
 
             const res = await fetch(path, options);
             const result = await res.json();
 
-            if (!res.ok) throw new Error(result.error);
+            if (!res.ok) {
+                throw new Error(result.message || result.statusText);
+            }
 
             usersMap[result.id] = result;
             usersMap = usersMap;

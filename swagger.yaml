@@ -259,10 +259,8 @@ definitions:
   User:
     type: object
     required:
-      - id
       - login
       - name
-      - password
     properties:
       id:
         type: string
@@ -281,7 +279,6 @@ definitions:
   Person:
     type: object
     required:
-      - id
       - name
     properties:
       id:
@@ -305,7 +302,6 @@ definitions:
   Tree:
     type: object
     required:
-      - id
       - name
       - user_id
     properties:

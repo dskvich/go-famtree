@@ -60,7 +60,7 @@ func (c UserHandler) GetUsers(param users.GetUsersParams) middleware.Responder {
 func mapDomainUser(u domain.User) *models.User {
 	id := strfmt.UUID(u.ID.String())
 	return &models.User{
-		ID:    &id,
+		ID:    id,
 		Login: &u.Login,
 		Name:  &u.Name,
 	}
