@@ -13,9 +13,7 @@
 
     // Get the data from the api, after the page is mounted.
     onMount(async () => {
-        const res = await getUsers();
-        console.log(res)
-        usersMap = res;
+        getUsers();
     });
 
     function clearState() {
@@ -24,18 +22,18 @@
 
     const getUsers = async () => {
         try {
-            const res = await fetch('/api/v1/users');
-            if (res.ok) {
-                const users = await res.json();
-                const usersMap = users.reduce(function(map, user) {
-                    map[user.id] = user;
-                    return map;
-                }, {});
-                return usersMap;
-            } else {
-                const msg = await res.text();
-                console.error(res.statusCode, 'Get users: ' + msg);
+            const resp = await fetch('/api/v1/users');
+            if (!resp.ok) {
+                const msg = await resp.text();
+                console.error(resp.statusCode, 'getting users: ' + msg);
             }
+
+            const result = await resp.json();
+            usersMap = result.reduce(function(map, user) {
+                map[user.id] = user;
+                return map;
+            }, {});
+            usersMap = usersMap;
         } catch (e) {
             console.error(e.message);
         }
@@ -43,9 +41,12 @@
 
     const deleteUser = async (id) => {
         try {
-            const options = {method: 'DELETE'};
-            const res = await fetch(`/api/v1/users/${id}`, options);
-            if (!res.ok) throw new Error('failed to delete dog with id ' + id);
+            const resp = await fetch(`/api/v1/users/${id}`, {method: 'DELETE'});
+            if (!resp.ok) {
+                const msg = await resp.text();
+                console.error(resp.statusCode, 'deleting users: ' + msg);
+            }
+
             delete usersMap[id];
             usersMap = usersMap;
         } catch (e) {
@@ -53,36 +54,51 @@
         }
     }
 
-    function editUser(dog) {
-        ({login, name} = dog);
-        id = dog.id;
+    function editUser(user) {
+        ({id, login, name} = user);
     }
 
     const saveUser = async () => {
-        // If `id` is set, we are updating a dog.
-        // Otherwise we are creating a new dog.
-        const user = {login, name, role: "USER"};
-        if (id) user.id = id;
-
         try {
+            const user = {id, login, name};
             const options = {
-                method: id ? 'PUT' : 'POST',
+                method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(user)
             };
 
-            console.log(options)
-
-            const path = id ? `/api/v1/users/${id}` : '/api/v1/users';
-
-            const res = await fetch(path, options);
-            const result = await res.json();
-
-            if (!res.ok) {
-                throw new Error(result.message || result.statusText);
+            const resp = await fetch('/api/v1/users', options);
+            if (!resp.ok){
+                const msg = await resp.text();
+                console.error(resp.statusCode, 'saving users: ' + msg);
             }
 
+            const result = await resp.json();
             usersMap[result.id] = result;
+            usersMap = usersMap;
+
+            clearState();
+        } catch (e) {
+            console.error(e.message);
+        }
+    }
+
+    const updateUser = async () => {
+        try {
+            const user = {login, name};
+            const options = {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(user)
+            };
+
+            const resp = await fetch(`/api/v1/users/${id}`, options);
+            if (!resp.ok) {
+                const msg = await resp.text();
+                console.error(resp.statusCode, 'updating users: ' + msg);
+            }
+
+            usersMap[id] = {id, login, name};
             usersMap = usersMap;
 
             clearState();
@@ -100,7 +116,7 @@
         <form>
             <input type="text" bind:value={login}/>
             <input type="text" bind:value={name}/>
-            <button on:click|preventDefault={saveUser}>
+            <button on:click|preventDefault={id?updateUser:saveUser}>
                 {saveBtnText}
             </button>
             {#if id}

@@ -17,22 +17,28 @@ func NewUserBunRepository(pg *Pg) *UserBunRepository {
 	}
 }
 
-func (repo UserBunRepository) FindAll(ctx context.Context) (u []domain.User, err error) {
-	err = repo.pg.GetConnection().NewSelect().Model(&u).Scan(ctx)
-	return
+func (repo UserBunRepository) FindAll(ctx context.Context) ([]domain.User, error) {
+	users := make([]domain.User, 0)
+	if err := repo.pg.GetConnection().NewSelect().Model(&users).Scan(ctx); err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 
-func (repo UserBunRepository) FindByID(id uuid.UUID) (u *domain.User, err error) {
-	err = repo.pg.GetConnection().NewSelect().Model(&u).Where("id = ?", id).Scan(context.Background())
-	return
+func (repo UserBunRepository) FindByID(ctx context.Context, id uuid.UUID) (*domain.User, error) {
+	user := new(domain.User)
+	if err := repo.pg.GetConnection().NewSelect().Model(user).Where("id = ?", id.String()).Scan(ctx); err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
-func (repo UserBunRepository) Persist(u *domain.User) error {
-	_, err := repo.pg.GetConnection().NewInsert().Model(u).On("CONFLICT (id) DO UPDATE").Exec(context.Background())
+func (repo UserBunRepository) Persist(ctx context.Context, u *domain.User) error {
+	_, err := repo.pg.GetConnection().NewInsert().Model(u).On("CONFLICT (id) DO UPDATE").Exec(ctx)
 	return err
 }
 
-func (repo UserBunRepository) Delete(id uuid.UUID) error {
-	_, err := repo.pg.GetConnection().NewDelete().Model((*domain.User)(nil)).Where("id = ?", id).Exec(context.Background())
+func (repo UserBunRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	_, err := repo.pg.GetConnection().NewDelete().Model((*domain.User)(nil)).Where("id = ?", id).Exec(ctx)
 	return err
 }

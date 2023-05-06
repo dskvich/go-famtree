@@ -57,7 +57,10 @@ func main() {
 	// Handlers
 	userHandler := handler.NewUserHandler(userRepo)
 	api.UsersGetUsersHandler = users.GetUsersHandlerFunc(userHandler.GetUsers)
+	api.UsersGetUserByIDHandler = users.GetUserByIDHandlerFunc(userHandler.GetUserByID)
 	api.UsersCreateUserHandler = users.CreateUserHandlerFunc(userHandler.CreateUser)
+	api.UsersUpdateUserByIDHandler = users.UpdateUserByIDHandlerFunc(userHandler.UpdateUserByID)
+	api.UsersDeleteUserByIDHandler = users.DeleteUserByIDHandlerFunc(userHandler.DeleteUserByID)
 
 	router := chi.NewRouter()
 	router.Use(
