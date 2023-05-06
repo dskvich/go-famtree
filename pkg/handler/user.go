@@ -1,26 +1,34 @@
-package controller
+package handler
 
 import (
 	"net/http"
 
+	"github.com/go-openapi/strfmt"
+
+	"github.com/joffrua/go-famtree/api/models"
+
+	"github.com/go-openapi/runtime/middleware"
+
+	"github.com/joffrua/go-famtree/api/restapi/operations/users"
+
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
-	"github.com/joffrua/go-famtree/internal/domain"
-	"github.com/joffrua/go-famtree/internal/infra/httpserver"
+	"github.com/joffrua/go-famtree/pkg/domain"
+	"github.com/joffrua/go-famtree/pkg/infra/httpserver"
 )
 
-type UserController struct {
+type UserHandler struct {
 	repo domain.UserRepository
 }
 
-func NewUserController(repo domain.UserRepository) *UserController {
-	return &UserController{
+func NewUserHandler(repo domain.UserRepository) *UserHandler {
+	return &UserHandler{
 		repo: repo,
 	}
 }
 
-func (c UserController) New(w http.ResponseWriter, r *http.Request) {
+func (c UserHandler) New(w http.ResponseWriter, r *http.Request) {
 	var user domain.User
 	if err := httpserver.DecodeJSONBody(w, r, &user); err != nil {
 		httpserver.RespondWithError(w, http.StatusBadRequest, err)
@@ -35,18 +43,32 @@ func (c UserController) New(w http.ResponseWriter, r *http.Request) {
 	httpserver.RespondWithJSON(w, http.StatusCreated, user)
 }
 
-func (c UserController) GetAll(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	users, err := c.repo.FindAll(ctx)
+func (c UserHandler) ListUsers(param users.ListUsersParams) middleware.Responder {
+	ctx := param.HTTPRequest.Context()
+	userList, err := c.repo.FindAll(ctx)
 	if err != nil {
-		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
-		return
+		return users.NewListUsersDefault(500)
 	}
 
-	httpserver.RespondWithJSON(w, http.StatusOK, users)
+	return users.NewListUsersOK().WithPayload(toUserModels(userList))
 }
 
-func (c UserController) Get(w http.ResponseWriter, r *http.Request) {
+func toUserModels(users []domain.User) models.Users {
+	res := make(models.Users, len(users))
+	for i, u := range users {
+		id := strfmt.UUID(u.ID.String())
+		login := u.Login
+		name := u.Name
+		res[i] = &models.User{
+			ID:    &id,
+			Login: &login,
+			Name:  &name,
+		}
+	}
+	return res
+}
+
+func (c UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID, err := uuid.Parse(params["id"])
 	if err != nil {
@@ -63,7 +85,7 @@ func (c UserController) Get(w http.ResponseWriter, r *http.Request) {
 	httpserver.RespondWithJSON(w, http.StatusOK, user)
 }
 
-func (c UserController) Delete(w http.ResponseWriter, r *http.Request) {
+func (c UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID, err := uuid.Parse(params["id"])
 	if err != nil {
@@ -79,7 +101,7 @@ func (c UserController) Delete(w http.ResponseWriter, r *http.Request) {
 	httpserver.RespondWithJSON(w, http.StatusNoContent, nil)
 }
 
-func (c UserController) Update(w http.ResponseWriter, r *http.Request) {
+func (c UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID, err := uuid.Parse(params["id"])
 	if err != nil {

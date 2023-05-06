@@ -1,15 +1,15 @@
-package controller
+package handler
 
 import (
 	"net/http"
 
 	"github.com/gorilla/mux"
 
-	"github.com/joffrua/go-famtree/internal/infra/httpserver"
+	"github.com/joffrua/go-famtree/pkg/infra/httpserver"
 
 	"github.com/google/uuid"
 
-	"github.com/joffrua/go-famtree/internal/domain"
+	"github.com/joffrua/go-famtree/pkg/domain"
 )
 
 type TreeController struct {

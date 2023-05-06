@@ -1,0 +1,259 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Family Tree
+
+basePath: /api
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /v1/users:
+    get:
+      summary: List all users
+      operationId: listUsers
+      tags:
+        - users
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/Users'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Create a user
+      operationId: createUser
+      tags:
+        - users
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: '#/definitions/User'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /v1/users/{userId}:
+    get:
+      summary: Info for a specific user
+      operationId: getUser
+      tags:
+        - users
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The id of the user to retrieve
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/User'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      summary: Update a user
+      operationId: updateUser
+      tags:
+        - users
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The id of the user to update
+          type: string
+          format: uuid
+        - in: body
+          name: body
+          description: Updated user object
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/User'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      tags:
+        - users
+      summary: Deletes a user
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The id of the user to delete
+          type: string
+          format: uuid
+      responses:
+        "201":
+          description: Null response
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /v1/trees:
+    get:
+      summary: List all trees
+      operationId: listTrees
+      tags:
+        - trees
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/Trees'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Create a tree
+      operationId: createTree
+      tags:
+        - trees
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: '#/definitions/Tree'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /v1/trees/{treeId}:
+    get:
+      summary: Info for a specific tree
+      operationId: getTree
+      tags:
+        - trees
+      parameters:
+        - name: treeId
+          in: path
+          required: true
+          description: The id of the tree to retrieve
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/Tree'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      summary: Update a tree
+      operationId: updateTree
+      tags:
+        - trees
+      parameters:
+        - name: treeId
+          in: path
+          required: true
+          description: The id of the tree to update
+          type: string
+          format: uuid
+        - in: body
+          name: body
+          description: Updated tree object
+          required: true
+          schema:
+            $ref: "#/definitions/Tree"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/Tree'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      tags:
+        - trees
+      summary: Deletes a tree
+      operationId: deleteTree
+      parameters:
+        - name: treeId
+          in: path
+          required: true
+          description: The id of the tree to delete
+          type: string
+          format: uuid
+      responses:
+        "201":
+          description: Null response
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  User:
+    type: "object"
+    required:
+      - id
+      - login
+      - name
+    properties:
+      id:
+        type: string
+        format: uuid
+      login:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+        format: password
+  Users:
+    type: array
+    items:
+      $ref: '#/definitions/User'
+  Tree:
+    type: "object"
+    required:
+      - id
+      - name
+      - description
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      description:
+        type: string
+  Trees:
+    type: array
+    items:
+      $ref: '#/definitions/Tree'
+  Error:
+    type: "object"
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string

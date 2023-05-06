@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/joffrua/go-famtree/internal/domain"
+	"github.com/joffrua/go-famtree/pkg/domain"
 )
 
 type TreeBunRepository struct {

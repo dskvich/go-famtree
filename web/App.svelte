@@ -24,7 +24,7 @@
 
     const getUsers = async () => {
         try {
-            const res = await fetch('/api/users');
+            const res = await fetch('/api/v1/users');
             if (res.ok) {
                 const users = await res.json();
                 const usersMap = users.reduce(function(map, user) {
@@ -44,7 +44,7 @@
     const deleteUser = async (id) => {
         try {
             const options = {method: 'DELETE'};
-            const res = await fetch(`/api/users/${id}`, options);
+            const res = await fetch(`/api/v1/users/${id}`, options);
             if (!res.ok) throw new Error('failed to delete dog with id ' + id);
             delete usersMap[id];
             usersMap = usersMap;
@@ -71,7 +71,7 @@
                 body: JSON.stringify(user)
             };
 
-            const path = id ? `/api/users/${id}` : '/api/users';
+            const path = id ? `/api/v1/users/${id}` : '/api/v1/users';
 
             const res = await fetch(path, options);
             const result = await res.json();

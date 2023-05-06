@@ -5,14 +5,26 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-openapi/runtime/middleware"
+
+	"github.com/joffrua/go-famtree/pkg/infra/httpserver"
+
+	"github.com/joffrua/go-famtree/api/restapi/operations/users"
+
+	"github.com/joffrua/go-famtree/pkg/handler"
+
+	"github.com/go-chi/chi"
+	"github.com/go-openapi/loads"
+	"github.com/joffrua/go-famtree/api/restapi"
+
+	"github.com/joffrua/go-famtree/api/restapi/operations"
+
 	"github.com/kelseyhightower/envconfig"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
 	"github.com/joffrua/go-famtree/config"
-	"github.com/joffrua/go-famtree/internal/controller"
-	"github.com/joffrua/go-famtree/internal/infra/db"
-	"github.com/joffrua/go-famtree/internal/infra/httpserver"
+	"github.com/joffrua/go-famtree/pkg/infra/db"
 )
 
 func main() {
@@ -33,25 +45,40 @@ func main() {
 	defer pg.Disconnect()
 
 	userRepo := db.NewUserBunRepository(pg)
-	treeRepo := db.NewTreeBunRepository(pg)
+	//treeRepo := db.NewTreeBunRepository(pg)
 
-	userCtrl := controller.NewUserController(userRepo)
-	treeCtrl := controller.NewTreeController(treeRepo)
+	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
+	if err != nil {
+		log.Error().Err(err).Msg("Embedded swagger file loading failed")
+		os.Exit(1)
+	}
+	api := operations.NewFamilyTreeAPI(swaggerSpec)
 
-	s := httpserver.NewBuilder(&cfg.HTTP)
-	s.AddRoute(http.MethodPost, "/api/users", userCtrl.New)
-	s.AddRoute(http.MethodGet, "/api/users", userCtrl.GetAll)
-	s.AddRoute(http.MethodGet, "/api/users/{id}", userCtrl.Get)
-	s.AddRoute(http.MethodPut, "/api/users/{id}", userCtrl.Update)
-	s.AddRoute(http.MethodDelete, "/api/users/{id}", userCtrl.Delete)
+	// Handlers
+	userHandler := handler.NewUserHandler(userRepo)
+	api.UsersListUsersHandler = users.ListUsersHandlerFunc(userHandler.ListUsers)
 
-	s.AddRoute(http.MethodPost, "/api/trees", treeCtrl.New)
-	s.AddRoute(http.MethodGet, "/api/trees", treeCtrl.GetAll)
-	s.AddRoute(http.MethodGet, "/api/trees/{id}", treeCtrl.Get)
-	s.AddRoute(http.MethodPut, "/api/trees/{id}", treeCtrl.Update)
-	s.AddRoute(http.MethodDelete, "/api/trees/{id}", treeCtrl.Delete)
+	router := chi.NewRouter()
+	router.Use(
+		httpserver.FileServerMiddleware,
+	)
 
-	s.AddStaticDir("/", "./build")
+	// Setup swagger UI
+	router.Handle("/api/swagger.json", middleware.Spec("/api", swaggerSpec.Raw(), nil))
+	router.Handle("/api", middleware.SwaggerUI(middleware.SwaggerUIOpts{
+		SpecURL: "/api/swagger.json",
+		Path:    "/api",
+	}, http.NotFoundHandler()))
 
-	s.Start()
+	router.Mount("/", api.Serve(nil))
+
+	srv := restapi.NewServer(api)
+	defer srv.Shutdown()
+	srv.Port = cfg.Port
+	srv.ConfigureAPI()
+	srv.SetHandler(router)
+	if err := srv.Serve(); err != nil {
+		log.Error().Err(err).Msg("Server error")
+		os.Exit(1)
+	}
 }
