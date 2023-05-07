@@ -20,7 +20,7 @@ import (
 )
 
 type UserRepository interface {
-	FindAll(context.Context) ([]domain.User, error)
+	FindAll(context.Context) ([]*domain.User, error)
 	FindByID(context.Context, uuid.UUID) (*domain.User, error)
 	Persist(context.Context, *domain.User) error
 	Delete(context.Context, uuid.UUID) error
@@ -45,7 +45,7 @@ func (c *UserHandler) CreateUser(params users.CreateUserParams) middleware.Respo
 		return users.NewCreateUserDefault(500)
 	}
 
-	return users.NewCreateUserCreated().WithPayload(mapDomainUser(*user))
+	return users.NewCreateUserCreated().WithPayload(mapDomainUser(user))
 }
 
 func (c *UserHandler) GetUsers(params users.GetUsersParams) middleware.Responder {
@@ -57,15 +57,15 @@ func (c *UserHandler) GetUsers(params users.GetUsersParams) middleware.Responder
 		return users.NewGetUsersDefault(500)
 	}
 
-	res := make([]*models.User, len(userList))
+	mappedUsers := make([]*models.User, len(userList))
 	for i, u := range userList {
-		res[i] = mapDomainUser(u)
+		mappedUsers[i] = mapDomainUser(u)
 	}
 
-	return users.NewGetUsersOK().WithPayload(res)
+	return users.NewGetUsersOK().WithPayload(mappedUsers)
 }
 
-func mapDomainUser(u domain.User) *models.User {
+func mapDomainUser(u *domain.User) *models.User {
 	id := strfmt.UUID(u.ID.String())
 	return &models.User{
 		ID:    id,
@@ -90,7 +90,7 @@ func (c *UserHandler) GetUserByID(params users.GetUserByIDParams) middleware.Res
 		return users.NewGetUserByIDDefault(403)
 	}
 
-	res, err := c.repo.FindByID(ctx, id)
+	user, err := c.repo.FindByID(ctx, id)
 	if err != nil {
 		log.Err(err).Interface("params", params).Msg("finding a user by id")
 		if err == sql.ErrNoRows {
@@ -99,7 +99,7 @@ func (c *UserHandler) GetUserByID(params users.GetUserByIDParams) middleware.Res
 		return users.NewGetUserByIDDefault(500)
 	}
 
-	return users.NewGetUserByIDOK().WithPayload(mapDomainUser(*res))
+	return users.NewGetUserByIDOK().WithPayload(mapDomainUser(user))
 }
 
 func (c *UserHandler) DeleteUserByID(params users.DeleteUserByIDParams) middleware.Responder {

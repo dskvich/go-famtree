@@ -5,9 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/go-openapi/runtime/middleware"
-
-	"github.com/sushkevichd/go-famtree/pkg/infra/httpserver"
+	"github.com/sushkevichd/go-famtree/pkg/infrastructure/database"
 
 	"github.com/sushkevichd/go-famtree/api/restapi/operations/users"
 
@@ -15,6 +13,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-openapi/loads"
+	"github.com/go-openapi/runtime/middleware"
 	"github.com/sushkevichd/go-famtree/api/restapi"
 
 	"github.com/sushkevichd/go-famtree/api/restapi/operations"
@@ -24,7 +23,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/sushkevichd/go-famtree/config"
-	"github.com/sushkevichd/go-famtree/pkg/infra/db"
 )
 
 func main() {
@@ -32,20 +30,22 @@ func main() {
 
 	cfg := new(config.Config)
 	if err := envconfig.Process("", cfg); err != nil {
-		log.Error().Err(err).Msg("Config initialization failed")
+		log.Error().Err(err).Msg("initializing config")
 		os.Exit(1)
 	}
 	log.Info().Msgf("Config loaded: %+v", cfg)
 
-	pg, err := db.NewPg(&cfg.PG)
+	postgres, err := database.NewPostgres(cfg.PG.URL, cfg.PG.Host)
 	if err != nil {
-		log.Error().Err(err).Msg("PG connection error")
+		log.Error().Err(err).Msg("initializing PostgreSQL connection: %v")
 		os.Exit(1)
 	}
-	defer pg.Disconnect()
+	defer database.ClosePostgres(postgres)
 
-	userRepo := db.NewUserBunRepository(pg)
-	//treeRepo := db.NewTreeBunRepository(pg)
+	bunDB := database.NewBunDB(postgres, cfg.PG.ShowSQL)
+
+	userRepo := database.NewUserBunRepository(bunDB)
+	//treeRepo := db.NewTreeBunRepository(postgres)
 
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
@@ -64,7 +64,8 @@ func main() {
 
 	router := chi.NewRouter()
 	router.Use(
-		httpserver.FileServerMiddleware,
+		handler.FileServerMiddleware,
+		//handler.LoggerMiddleware,
 	)
 
 	// Setup swagger UI

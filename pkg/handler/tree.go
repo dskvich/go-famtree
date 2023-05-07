@@ -1,17 +1,6 @@
 package handler
 
-import (
-	"net/http"
-
-	"github.com/gorilla/mux"
-
-	"github.com/sushkevichd/go-famtree/pkg/infra/httpserver"
-
-	"github.com/google/uuid"
-
-	"github.com/sushkevichd/go-famtree/pkg/domain"
-)
-
+/*
 type TreeController struct {
 	repo domain.TreeRepository
 }
@@ -26,58 +15,58 @@ func (c TreeController) GetAll(w http.ResponseWriter, r *http.Request) {
 
 	tree, err := c.repo.FindAll()
 	if err != nil {
-		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
+		httpmiddleware.RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	httpserver.RespondWithJSON(w, http.StatusOK, tree)
+	httpmiddleware.RespondWithJSON(w, http.StatusOK, tree)
 }
 
 func (c TreeController) Get(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID, err := uuid.Parse(params["id"])
 	if err != nil {
-		httpserver.RespondWithError(w, http.StatusBadRequest, err)
+		httpmiddleware.RespondWithError(w, http.StatusBadRequest, err)
 		return
 	}
 
 	tree, err := c.repo.FindByID(ID)
 	if err != nil {
-		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
+		httpmiddleware.RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	httpserver.RespondWithJSON(w, http.StatusOK, tree)
+	httpmiddleware.RespondWithJSON(w, http.StatusOK, tree)
 }
 
 func (c TreeController) New(w http.ResponseWriter, r *http.Request) {
 	var tree *domain.Tree
 
-	if err := httpserver.DecodeJSONBody(w, r, tree); err != nil {
-		httpserver.RespondWithError(w, http.StatusBadRequest, err)
+	if err := httpmiddleware.DecodeJSONBody(w, r, tree); err != nil {
+		httpmiddleware.RespondWithError(w, http.StatusBadRequest, err)
 		return
 	}
 
 	if err := c.repo.Persist(tree); err != nil {
-		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
+		httpmiddleware.RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	httpserver.RespondWithJSON(w, http.StatusCreated, tree)
+	httpmiddleware.RespondWithJSON(w, http.StatusCreated, tree)
 }
 
 func (c TreeController) Update(w http.ResponseWriter, r *http.Request) {
 	var tree *domain.Tree
 
-	if err := httpserver.DecodeJSONBody(w, r, tree); err != nil {
-		httpserver.RespondWithError(w, http.StatusBadRequest, err)
+	if err := httpmiddleware.DecodeJSONBody(w, r, tree); err != nil {
+		httpmiddleware.RespondWithError(w, http.StatusBadRequest, err)
 		return
 	}
 
 	params := mux.Vars(r)
 	ID, err := uuid.Parse(params["id"])
 	if err != nil {
-		httpserver.RespondWithError(w, http.StatusBadRequest, err)
+		httpmiddleware.RespondWithError(w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -85,25 +74,26 @@ func (c TreeController) Update(w http.ResponseWriter, r *http.Request) {
 
 	err = c.repo.Persist(tree)
 	if err != nil {
-		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
+		httpmiddleware.RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	httpserver.RespondWithJSON(w, http.StatusOK, tree)
+	httpmiddleware.RespondWithJSON(w, http.StatusOK, tree)
 }
 
 func (c TreeController) Delete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID, err := uuid.Parse(params["id"])
 	if err != nil {
-		httpserver.RespondWithError(w, http.StatusBadRequest, err)
+		httpmiddleware.RespondWithError(w, http.StatusBadRequest, err)
 		return
 	}
 
 	if err = c.repo.Delete(ID); err != nil {
-		httpserver.RespondWithError(w, http.StatusInternalServerError, err)
+		httpmiddleware.RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	httpserver.RespondWithJSON(w, http.StatusNoContent, nil)
+	httpmiddleware.RespondWithJSON(w, http.StatusNoContent, nil)
 }
+*/
