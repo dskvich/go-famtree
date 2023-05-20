@@ -19,20 +19,12 @@ func NewTreeBunRepository(db *bun.DB) *TreeBunRepository {
 	}
 }
 
-func (r *TreeBunRepository) FindAll(ctx context.Context) ([]*domain.Tree, error) {
+func (r *TreeBunRepository) FindAllByUserID(ctx context.Context, userID uuid.UUID) ([]*domain.Tree, error) {
 	var trees []*domain.Tree
-	if err := r.db.NewSelect().Model(&trees).Scan(ctx); err != nil {
+	if err := r.db.NewSelect().Model(&trees).Where("user_id = ?", userID).Scan(ctx); err != nil {
 		return nil, err
 	}
 	return trees, nil
-}
-
-func (r *TreeBunRepository) FindByID(ctx context.Context, id uuid.UUID) (*domain.Tree, error) {
-	tree := new(domain.Tree)
-	if err := r.db.NewSelect().Model(tree).Where("id = ?", id.String()).Scan(ctx); err != nil {
-		return nil, err
-	}
-	return tree, nil
 }
 
 func (r *TreeBunRepository) Persist(ctx context.Context, t *domain.Tree) error {

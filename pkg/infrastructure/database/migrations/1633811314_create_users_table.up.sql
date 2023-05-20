@@ -1,3 +1,4 @@
+-- +migrate Up
 create table users (
     id uuid default uuid_generate_v4() constraint users_pk primary key,
     created_at timestamptz default current_timestamp,
@@ -7,4 +8,4 @@ create table users (
     name varchar(100),
     email varchar(50),
     password_hash varchar(100)
-)
+);

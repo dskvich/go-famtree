@@ -1,6 +1,8 @@
+-- +migrate Up
 create table trees(
     id uuid default uuid_generate_v4() constraint trees_pk primary key,
     created_at timestamptz default current_timestamp,
     name varchar(100),
-    description varchar(1000)
-)
+    description varchar(1000),
+    user_id uuid references users(id) on delete cascade
+);

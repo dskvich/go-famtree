@@ -10,8 +10,9 @@ RUN npm run build
 
 
 # This image builds server side
-FROM golang:1.17-alpine as server-build
+FROM golang:1.20-alpine as server-build
 RUN apk update && apk add --no-cache git
+RUN go install github.com/go-swagger/go-swagger/cmd/swagger && make swagger
 
 WORKDIR /app
 
@@ -27,7 +28,6 @@ WORKDIR /app
 
 COPY --from=ui-build /app/build ./build
 COPY --from=server-build /app/go-famtree ./
-COPY --from=server-build /app/cmd/migrations ./migrations
 
 # Run under non-privileged user with minimal write permissions
 RUN adduser -S -D -H user

@@ -2,33 +2,20 @@ package database
 
 import (
 	"database/sql"
-	"errors"
+	"embed"
 	"fmt"
-	"io/fs"
-	"path/filepath"
-	"strings"
 	"time"
-
-	"github.com/golang-migrate/migrate/v4/database/postgres"
-
-	"github.com/sushkevichd/go-famtree/config"
 
 	"github.com/rs/zerolog/log"
 
+	migrate "github.com/rubenv/sql-migrate"
 	"github.com/uptrace/bun/driver/pgdriver"
-
-	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-type Pg struct {
-	cfg   *config.PG
-	url   string
-	sqldb *sql.DB
-}
-
 const dbName = "app"
+
+//go:embed migrations/*.sql
+var migrationsFS embed.FS
 
 func NewPostgres(url, host string) (*sql.DB, error) {
 	if url == "" {
@@ -42,59 +29,21 @@ func NewPostgres(url, host string) (*sql.DB, error) {
 	sqldb.SetConnMaxLifetime(5 * time.Minute)
 
 	if err := runMigrations(sqldb); err != nil {
-		return nil, fmt.Errorf("running migrations: %+v", err)
+		return nil, fmt.Errorf("running migrationFS: %+v", err)
 	}
 
 	return sqldb, nil
 }
 
 func runMigrations(sqldb *sql.DB) error {
-	migrationsPath, err := findMigrationsPath(".")
-	if err != nil {
+	source := &migrate.EmbedFileSystemMigrationSource{
+		FileSystem: migrationsFS,
+		Root:       "migrations",
+	}
+	if _, err := migrate.Exec(sqldb, "postgres", source, migrate.Up); err != nil {
 		return err
 	}
-	log.Info().Msgf("migrations path: %+v", migrationsPath)
-
-	driver, err := postgres.WithInstance(sqldb, &postgres.Config{})
-	if err != nil {
-		return err
-	}
-
-	m, err := migrate.NewWithDatabaseInstance(
-		fmt.Sprintf("file://%s", migrationsPath),
-		"postgres",
-		driver,
-	)
-	if err != nil {
-		return err
-	}
-
-	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-		return err
-	}
-
 	return nil
-}
-
-func findMigrationsPath(startPath string) (string, error) {
-	var migrationsPath string
-	err := filepath.WalkDir(startPath, func(path string, d fs.DirEntry, err error) error {
-		if d.IsDir() && d.Name() == "migrations" {
-			migrationsPath = strings.ReplaceAll(path, "\\", "/")
-			return fs.SkipDir
-		}
-		return nil
-	})
-
-	if err != nil {
-		return "", err
-	}
-
-	if migrationsPath == "" {
-		return "", errors.New("migrations path not found")
-	}
-
-	return migrationsPath, nil
 }
 
 func ClosePostgres(sqldb *sql.DB) {

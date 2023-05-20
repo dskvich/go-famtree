@@ -53,7 +53,7 @@ paths:
       tags:
         - Users
       parameters:
-        - $ref: "#/parameters/UserIdParam"
+        - $ref: "#/parameters/UserIdPathParam"
       responses:
         "200":
           description: OK
@@ -67,7 +67,7 @@ paths:
       tags:
         - Users
       parameters:
-        - $ref: "#/parameters/UserIdParam"
+        - $ref: "#/parameters/UserIdPathParam"
         - in: body
           name: user
           required: true
@@ -84,21 +84,21 @@ paths:
       summary: Deletes a user by ID
       operationId: deleteUserById
       parameters:
-        - $ref: "#/parameters/UserIdParam"
+        - $ref: "#/parameters/UserIdPathParam"
       responses:
         "204":
           description: No content
         default:
           $ref: '#/responses/Error'
 
-  /v1/users/{userId}/trees:
+  /v1/trees:
     get:
-      summary: Get all trees for a user
-      operationId: getAllTreesForUser
+      summary: Get all trees
+      operationId: getTrees
       tags:
         - Trees
       parameters:
-        - $ref: "#/parameters/UserIdParam"
+        - $ref: "#/parameters/UserIdQueryParam"
       responses:
         "200":
           description: OK
@@ -109,12 +109,11 @@ paths:
         default:
           $ref: '#/responses/Error'
     post:
-      summary: Create a new tree for a user
-      operationId: createTreeForUser
+      summary: Create a new tree
+      operationId: createTree
       tags:
         - Trees
       parameters:
-        - $ref: "#/parameters/UserIdParam"
         - in: body
           name: tree
           required: true
@@ -128,15 +127,14 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /v1/users/{userId}/trees/{treeId}:
+  /v1/trees/{treeId}:
     get:
       summary: Get a tree by ID
       operationId: getTreeById
       tags:
         - Trees
       parameters:
-        - $ref: "#/parameters/UserIdParam"
-        - $ref: "#/parameters/TreeIdParam"
+        - $ref: "#/parameters/TreeIdPathParam"
       responses:
         "200":
           description: OK
@@ -150,8 +148,7 @@ paths:
       tags:
         - Trees
       parameters:
-        - $ref: "#/parameters/UserIdParam"
-        - $ref: "#/parameters/TreeIdParam"
+        - $ref: "#/parameters/TreeIdPathParam"
         - in: body
           name: tree
           required: true
@@ -168,23 +165,36 @@ paths:
       tags:
         - Trees
       parameters:
-        - $ref: "#/parameters/UserIdParam"
-        - $ref: "#/parameters/TreeIdParam"
+        - $ref: "#/parameters/TreeIdPathParam"
       responses:
         "204":
           description: No content
         default:
           $ref: '#/responses/Error'
 
-  /v1/users/{userId}/trees/{treeId}/people:
+  /v1/people:
+    get:
+      summary: Get people in a tree
+      operationId: getPeopleByTree
+      tags:
+        - People
+      parameters:
+        - $ref: "#/parameters/TreeIdQueryParam"
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Person"
+        default:
+          $ref: '#/responses/Error'
     post:
       summary: Create a new person in a tree
       operationId: createPersonForTree
       tags:
         - People
       parameters:
-        - $ref: "#/parameters/UserIdParam"
-        - $ref: "#/parameters/TreeIdParam"
         - in: body
           name: person
           required: true
@@ -198,16 +208,14 @@ paths:
         default:
           $ref: "#/responses/Error"
 
-  /v1/users/{userId}/trees/{treeId}/people/{personId}:
+  /v1/people/{personId}:
     put:
       summary: Update a person by ID
       operationId: updatePersonById
       tags:
         - People
       parameters:
-        - $ref: "#/parameters/UserIdParam"
-        - $ref: "#/parameters/TreeIdParam"
-        - $ref: "#/parameters/PersonIdParam"
+        - $ref: "#/parameters/PersonIdPathParam"
         - in: body
           name: person
           required: true
@@ -224,9 +232,7 @@ paths:
       tags:
         - People
       parameters:
-        - $ref: "#/parameters/UserIdParam"
-        - $ref: "#/parameters/TreeIdParam"
-        - $ref: "#/parameters/PersonIdParam"
+        - $ref: "#/parameters/PersonIdPathParam"
       responses:
         "204":
           description: No Content
@@ -234,21 +240,35 @@ paths:
           $ref: "#/responses/Error"
 
 parameters:
-  UserIdParam:
+  UserIdPathParam:
     in: path
     name: userId
     required: true
     type: string
     format: uuid
 
-  TreeIdParam:
+  UserIdQueryParam:
+    in: query
+    name: userId
+    required: true
+    type: string
+    format: uuid
+
+  TreeIdPathParam:
     in: path
     name: treeId
     required: true
     type: string
     format: uuid
 
-  PersonIdParam:
+  TreeIdQueryParam:
+    in: query
+    name: treeId
+    required: true
+    type: string
+    format: uuid
+
+  PersonIdPathParam:
     in: path
     name: personId
     required: true
@@ -286,14 +306,15 @@ definitions:
         format: uuid
       name:
         type: string
+      tree_id:
+        type: string
+        format: uuid
       father_id:
         type: string
         format: uuid
-        description: The ID of the person's father, if known
       mother_id:
         type: string
         format: uuid
-        description: The ID of the person's mother, if known
       children:
         type: array
         items:

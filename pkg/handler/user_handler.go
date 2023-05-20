@@ -36,11 +36,11 @@ func NewUserHandler(repo UserRepository) *UserHandler {
 	}
 }
 
-func (c *UserHandler) CreateUser(params users.CreateUserParams) middleware.Responder {
+func (h *UserHandler) CreateUser(params users.CreateUserParams) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 	user := mapModelUser(params.User)
 
-	if err := c.repo.Persist(ctx, user); err != nil {
+	if err := h.repo.Persist(ctx, user); err != nil {
 		log.Err(err).Interface("params", params).Msg("creating a user")
 		return users.NewCreateUserDefault(500)
 	}
@@ -48,10 +48,10 @@ func (c *UserHandler) CreateUser(params users.CreateUserParams) middleware.Respo
 	return users.NewCreateUserCreated().WithPayload(mapDomainUser(user))
 }
 
-func (c *UserHandler) GetUsers(params users.GetUsersParams) middleware.Responder {
+func (h *UserHandler) GetUsers(params users.GetUsersParams) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 
-	userList, err := c.repo.FindAll(ctx)
+	userList, err := h.repo.FindAll(ctx)
 	if err != nil {
 		log.Err(err).Interface("params", params).Msg("finding all users")
 		return users.NewGetUsersDefault(500)
@@ -71,6 +71,7 @@ func mapDomainUser(u *domain.User) *models.User {
 		ID:    id,
 		Login: &u.Login,
 		Name:  &u.Name,
+		Email: strfmt.Email(u.Email),
 	}
 }
 
@@ -78,10 +79,11 @@ func mapModelUser(u *models.User) *domain.User {
 	return &domain.User{
 		Login: *u.Login,
 		Name:  *u.Name,
+		Email: u.Email.String(),
 	}
 }
 
-func (c *UserHandler) GetUserByID(params users.GetUserByIDParams) middleware.Responder {
+func (h *UserHandler) GetUserByID(params users.GetUserByIDParams) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 
 	id, err := uuid.Parse(params.UserID.String())
@@ -90,7 +92,7 @@ func (c *UserHandler) GetUserByID(params users.GetUserByIDParams) middleware.Res
 		return users.NewGetUserByIDDefault(403)
 	}
 
-	user, err := c.repo.FindByID(ctx, id)
+	user, err := h.repo.FindByID(ctx, id)
 	if err != nil {
 		log.Err(err).Interface("params", params).Msg("finding a user by id")
 		if err == sql.ErrNoRows {
@@ -102,7 +104,7 @@ func (c *UserHandler) GetUserByID(params users.GetUserByIDParams) middleware.Res
 	return users.NewGetUserByIDOK().WithPayload(mapDomainUser(user))
 }
 
-func (c *UserHandler) DeleteUserByID(params users.DeleteUserByIDParams) middleware.Responder {
+func (h *UserHandler) DeleteUserByID(params users.DeleteUserByIDParams) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 
 	id, err := uuid.Parse(params.UserID.String())
@@ -111,7 +113,7 @@ func (c *UserHandler) DeleteUserByID(params users.DeleteUserByIDParams) middlewa
 		return users.NewDeleteUserByIDDefault(403)
 	}
 
-	if err = c.repo.Delete(ctx, id); err != nil {
+	if err = h.repo.Delete(ctx, id); err != nil {
 		log.Err(err).Interface("params", params).Msg("deleting a user by id")
 		if err == sql.ErrNoRows {
 			return users.NewDeleteUserByIDDefault(404)
@@ -122,7 +124,7 @@ func (c *UserHandler) DeleteUserByID(params users.DeleteUserByIDParams) middlewa
 	return users.NewDeleteUserByIDNoContent()
 }
 
-func (c *UserHandler) UpdateUserByID(params users.UpdateUserByIDParams) middleware.Responder {
+func (h *UserHandler) UpdateUserByID(params users.UpdateUserByIDParams) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 
 	id, err := uuid.Parse(params.UserID.String())
@@ -134,7 +136,7 @@ func (c *UserHandler) UpdateUserByID(params users.UpdateUserByIDParams) middlewa
 	user := mapModelUser(params.User)
 	user.ID = &id
 
-	if err := c.repo.Persist(ctx, user); err != nil {
+	if err := h.repo.Persist(ctx, user); err != nil {
 		log.Err(err).Interface("params", params).Msg("updating a user by id")
 		return users.NewUpdateUserByIDDefault(500)
 	}

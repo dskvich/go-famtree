@@ -1,3 +1,4 @@
+-- +migrate Up
 insert into users (
     id,
     login,
@@ -10,4 +11,4 @@ insert into users (
     'Demo Admin',
     'ADMIN',
     'EKquZCQo/g1EzlTVOvb6muWybt1uR9LUEBlSdLmMeHt3hIEO1A6XksokwWMRCfKsm1eNznyxGHsUeNhtzrtlUQ=='
-)
+);

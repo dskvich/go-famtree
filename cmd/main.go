@@ -5,6 +5,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/sushkevichd/go-famtree/api/restapi/operations/people"
+
+	"github.com/sushkevichd/go-famtree/api/restapi/operations/trees"
+
 	"github.com/sushkevichd/go-famtree/pkg/infrastructure/database"
 
 	"github.com/sushkevichd/go-famtree/api/restapi/operations/users"
@@ -12,12 +16,14 @@ import (
 	"github.com/sushkevichd/go-famtree/pkg/handler"
 
 	"github.com/go-chi/chi"
+	chiMiddleware "github.com/go-chi/chi/middleware"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/sushkevichd/go-famtree/api/restapi"
 
 	"github.com/sushkevichd/go-famtree/api/restapi/operations"
 
+	"github.com/go-chi/cors"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -45,7 +51,8 @@ func main() {
 	bunDB := database.NewBunDB(postgres, cfg.PG.ShowSQL)
 
 	userRepo := database.NewUserBunRepository(bunDB)
-	//treeRepo := db.NewTreeBunRepository(postgres)
+	treeRepo := database.NewTreeBunRepository(bunDB)
+	peopleRepo := database.NewPeopleBunRepository(bunDB)
 
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
@@ -62,10 +69,26 @@ func main() {
 	api.UsersUpdateUserByIDHandler = users.UpdateUserByIDHandlerFunc(userHandler.UpdateUserByID)
 	api.UsersDeleteUserByIDHandler = users.DeleteUserByIDHandlerFunc(userHandler.DeleteUserByID)
 
+	treeHandler := handler.NewTreeHandler(treeRepo)
+	api.TreesGetAllTreesForUserHandler = trees.GetAllTreesForUserHandlerFunc(treeHandler.GetAllTreesForUser)
+	api.TreesCreateTreeForUserHandler = trees.CreateTreeForUserHandlerFunc(treeHandler.CreateTreeForUser)
+
+	peopleHandler := handler.NewPeopleHandler(peopleRepo)
+	api.PeopleGetPeopleByTreeHandler = people.GetPeopleByTreeHandlerFunc(peopleHandler.GetPeopleByTree)
+
 	router := chi.NewRouter()
+
+	// Add CORS middleware
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"}, // replace with your allowed origins
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+	})
+	router.Use(corsHandler.Handler)
+
 	router.Use(
 		handler.FileServerMiddleware,
-		//handler.LoggerMiddleware,
+		chiMiddleware.Logger,
+		chiMiddleware.Recoverer,
 	)
 
 	// Setup swagger UI
