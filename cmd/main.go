@@ -70,11 +70,11 @@ func main() {
 	api.UsersDeleteUserByIDHandler = users.DeleteUserByIDHandlerFunc(userHandler.DeleteUserByID)
 
 	treeHandler := handler.NewTreeHandler(treeRepo)
-	api.TreesGetAllTreesForUserHandler = trees.GetAllTreesForUserHandlerFunc(treeHandler.GetAllTreesForUser)
-	api.TreesCreateTreeForUserHandler = trees.CreateTreeForUserHandlerFunc(treeHandler.CreateTreeForUser)
+	api.TreesGetTreesHandler = trees.GetTreesHandlerFunc(treeHandler.GetTrees)
+	api.TreesCreateTreeHandler = trees.CreateTreeHandlerFunc(treeHandler.CreateTree)
 
 	peopleHandler := handler.NewPeopleHandler(peopleRepo)
-	api.PeopleGetPeopleByTreeHandler = people.GetPeopleByTreeHandlerFunc(peopleHandler.GetPeopleByTree)
+	api.PeopleGetPeopleHandler = people.GetPeopleHandlerFunc(peopleHandler.GetPeople)
 
 	router := chi.NewRouter()
 

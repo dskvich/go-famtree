@@ -174,8 +174,8 @@ paths:
 
   /v1/people:
     get:
-      summary: Get people in a tree
-      operationId: getPeopleByTree
+      summary: Get all people
+      operationId: getPeople
       tags:
         - People
       parameters:
@@ -190,8 +190,8 @@ paths:
         default:
           $ref: '#/responses/Error'
     post:
-      summary: Create a new person in a tree
-      operationId: createPersonForTree
+      summary: Create a new person
+      operationId: createPerson
       tags:
         - People
       parameters:

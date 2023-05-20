@@ -28,18 +28,18 @@ func NewTreeHandler(repo TreeRepository) *TreeHandler {
 	}
 }
 
-func (h *TreeHandler) GetAllTreesForUser(params trees.GetAllTreesForUserParams) middleware.Responder {
+func (h *TreeHandler) GetTrees(params trees.GetTreesParams) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 	userID, err := uuid.Parse(params.UserID.String())
 	if err != nil {
 		log.Err(err).Interface("params", params).Msg("parsing uuid")
-		return trees.NewGetAllTreesForUserDefault(403)
+		return trees.NewGetTreesDefault(403)
 	}
 
 	treeList, err := h.repo.FindAllByUserID(ctx, userID)
 	if err != nil {
-		log.Err(err).Interface("params", params).Msg("finding all users")
-		return trees.NewGetAllTreesForUserDefault(500)
+		log.Err(err).Interface("params", params).Msg("finding all trees")
+		return trees.NewGetTreesDefault(500)
 	}
 
 	mappedTrees := make([]*models.Tree, len(treeList))
@@ -47,7 +47,7 @@ func (h *TreeHandler) GetAllTreesForUser(params trees.GetAllTreesForUserParams) 
 		mappedTrees[i] = mapDomainTree(u)
 	}
 
-	return trees.NewGetAllTreesForUserOK().WithPayload(mappedTrees)
+	return trees.NewGetTreesOK().WithPayload(mappedTrees)
 }
 
 func mapDomainTree(t *domain.Tree) *models.Tree {
@@ -66,20 +66,14 @@ func mapModelTree(t *models.Tree) *domain.Tree {
 	}
 }
 
-func (h *TreeHandler) CreateTreeForUser(params trees.CreateTreeForUserParams) middleware.Responder {
+func (h *TreeHandler) CreateTree(params trees.CreateTreeParams) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
-	userID, err := uuid.Parse(params.UserID.String())
-	if err != nil {
-		log.Err(err).Interface("params", params).Msg("parsing uuid")
-		return trees.NewCreateTreeForUserDefault(403)
-	}
 	tree := mapModelTree(params.Tree)
-	tree.UserID = &userID
 
 	if err := h.repo.Persist(ctx, tree); err != nil {
-		log.Err(err).Interface("params", params).Msg("creating a tree for user")
-		return trees.NewCreateTreeForUserDefault(500)
+		log.Err(err).Interface("params", params).Msg("creating a tree")
+		return trees.NewCreateTreeDefault(500)
 	}
 
-	return trees.NewCreateTreeForUserCreated().WithPayload(mapDomainTree(tree))
+	return trees.NewCreateTreeCreated().WithPayload(mapDomainTree(tree))
 }

@@ -14,7 +14,7 @@ import (
 )
 
 type PeopleRepository interface {
-	FindPeopleByTreeID(ctx context.Context, treeID uuid.UUID) ([]*domain.Person, error)
+	FindAllByTreeID(ctx context.Context, treeID uuid.UUID) ([]*domain.Person, error)
 }
 
 type PeopleHandler struct {
@@ -27,18 +27,18 @@ func NewPeopleHandler(repo PeopleRepository) *PeopleHandler {
 	}
 }
 
-func (h *PeopleHandler) GetPeopleByTree(params people.GetPeopleByTreeParams) middleware.Responder {
+func (h *PeopleHandler) GetPeople(params people.GetPeopleParams) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 	treeID, err := uuid.Parse(params.TreeID.String())
 	if err != nil {
 		log.Err(err).Interface("params", params).Msg("parsing uuid")
-		return people.NewGetPeopleByTreeDefault(403)
+		return people.NewGetPeopleDefault(403)
 	}
 
-	peopleList, err := h.repo.FindPeopleByTreeID(ctx, treeID)
+	peopleList, err := h.repo.FindAllByTreeID(ctx, treeID)
 	if err != nil {
 		log.Err(err).Interface("params", params).Msg("finding all people")
-		return people.NewGetPeopleByTreeDefault(500)
+		return people.NewGetPeopleDefault(500)
 	}
 
 	mappedPeople := make([]*models.Person, len(peopleList))
@@ -46,7 +46,7 @@ func (h *PeopleHandler) GetPeopleByTree(params people.GetPeopleByTreeParams) mid
 		mappedPeople[i] = mapDomainPerson(u)
 	}
 
-	return people.NewGetPeopleByTreeOK().WithPayload(mappedPeople)
+	return people.NewGetPeopleOK().WithPayload(mappedPeople)
 }
 
 func mapDomainPerson(p *domain.Person) *models.Person {
