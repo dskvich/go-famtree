@@ -5,34 +5,34 @@ const trees = writable([]);
 
 const getTreesForUser = async (userId) => {
     try {
-        const response = await api.get(`/users/${userId}/trees`);
+        const response = await api.get('/trees', { params: { userId } });
         trees.set(response.data);
     } catch (error) {
         console.error('Failed to fetch trees:', error);
     }
 };
 
-const createTreeForUser = async (userId, tree) => {
+const createTreeForUser = async (tree) => {
     try {
-        const response = await api.post(`/users/${userId}/trees`, tree);
+        const response = await api.post(`/trees`, tree);
         trees.update(currentTrees => [...currentTrees, response.data]);
     } catch (error) {
         console.error('Failed to create tree:', error);
     }
 };
 
-const updateTreeById = async (userId, treeId, tree) => {
+const updateTreeById = async (treeId, tree) => {
     try {
-        const response = await api.put(`/users/${userId}/trees/${treeId}`, tree);
+        const response = await api.put(`/trees/${treeId}`, tree);
         trees.update(currentTrees => currentTrees.map(t => t.id === treeId ? {...t, ...tree} : u));
     } catch (error) {
         console.error('Failed to update tree:', error);
     }
 };
 
-const deleteTreeById = async (userId, treeId) => {
+const deleteTreeById = async (treeId) => {
     try {
-        await api.delete(`/users/${userId}/trees/${treeId}`);
+        await api.delete(`/trees/${treeId}`);
         trees.update(currentTrees => currentTrees.filter(t => t.id !== treeId));
     } catch (error) {
         console.error('Failed to delete tree:', error);

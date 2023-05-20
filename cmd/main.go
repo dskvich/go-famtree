@@ -86,8 +86,8 @@ func main() {
 	router.Use(corsHandler.Handler)
 
 	router.Use(
-		handler.FileServerMiddleware,
-		chiMiddleware.Logger,
+		handler.FileServer,
+		handler.RequestLogger,
 		chiMiddleware.Recoverer,
 	)
 

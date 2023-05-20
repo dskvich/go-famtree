@@ -1,5 +1,4 @@
 <script>
-    import { onMount } from 'svelte';
     import treeStore from '../stores/treeStore';
     import Tree from './Tree.svelte'
 
@@ -13,17 +12,13 @@
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        await treeStore.createTreeForUser(selectedUser.id, newTree);
+        await treeStore.createTreeForUser(newTree);
         newTree.name = '';
     };
 
     const handleSelect = (tree) => {
         selectedTree = tree;
     };
-
-    onMount(() => {
-        treeStore.getTreesForUser(selectedUser.id);
-    });
 
     $: selectedUser, treeStore.getTreesForUser(selectedUser.id);
 </script>
