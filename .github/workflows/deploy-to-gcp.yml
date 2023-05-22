@@ -1,0 +1,46 @@
+name: Deploy to GCP
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  RUN_REGION: europe-west1
+  SERVICE_NAME: go-famtree
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup GCP Service Account
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Configure Docker
+        run: |
+          gcloud auth configure-docker
+
+      - name: Build
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/$SERVICE_NAME:latest .
+
+      - name: Push
+        run: |
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/$SERVICE_NAME:latest
+
+      - name: Deploy
+        run: |
+          gcloud run deploy "$SERVICE_NAME" \
+          --region "$RUN_REGION" \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/$SERVICE_NAME \
+          --platform managed \
+          --allow-unauthenticated \
+          --project ${{ secrets.GCP_PROJECT_ID }}
