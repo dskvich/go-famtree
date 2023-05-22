@@ -12,7 +12,7 @@ RUN npm run build
 # This image builds server side
 FROM golang:1.20-alpine as server-build
 RUN apk update && apk add --no-cache git
-RUN go install github.com/go-swagger/go-swagger/cmd/swagger && make swagger
+RUN go install github.com/go-swagger/go-swagger/cmd/swagger@latest && make swagger
 
 WORKDIR /app
 
